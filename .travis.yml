@@ -1,0 +1,9 @@
+language: dart
+sudo: false
+dart:
+  - dev
+  - stable
+cache:
+  directories:
+    - $HOME/.pub-cache
+script: ./tool/presubmit.sh

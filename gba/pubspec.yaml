@@ -1,0 +1,13 @@
+name: gba
+description: >
+  A GameBoy Advanced emulator written in Dart
+version: 0.0.1
+authors:
+  - Matan Lurey <matan@lurey.org>
+homepage: https://github.com/matanlurey/gba.dart
+
+environment:
+  sdk: ">=1.8.0 <2.0.0"
+
+dev_dependencies:
+  test:
