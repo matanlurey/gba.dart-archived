@@ -9,5 +9,8 @@ homepage: https://github.com/matanlurey/gba.dart
 environment:
   sdk: ">=1.8.0 <2.0.0"
 
+dependencies:
+  quiver:
+
 dev_dependencies:
   test:
