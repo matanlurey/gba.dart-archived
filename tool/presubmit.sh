@@ -26,3 +26,9 @@ pub upgrade
 pub global run presubmit
 run_coveralls
 popd
+
+pushd arm7_tdmi
+pub upgrade
+pub global run presubmit
+run_coveralls
+popd
