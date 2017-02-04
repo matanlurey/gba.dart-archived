@@ -9,5 +9,13 @@ homepage: https://github.com/matanlurey/gba.dart
 environment:
   sdk: ">=1.8.0 <2.0.0"
 
+dependencies:
+  func:
+
+# Required for development. When we publish to pub, we'll comment this out.
+dependency_overrides:
+  arm7_tdmi:
+    path: ../arm7_tdmi
+
 dev_dependencies:
   test:
