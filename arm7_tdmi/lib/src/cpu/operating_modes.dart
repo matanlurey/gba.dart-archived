@@ -34,4 +34,10 @@ class OperatingMode {
   ///
   /// All modes other than [OperatingMode.user] are privileged.
   bool get isPrivileged => this == user;
+
+  /// Whether this mode can read or write the saved program status registers.
+  ///
+  /// Only exception modes have read/write access. All modes are exception modes
+  /// except for [user] and [system].
+  bool get canAccessSpsr => this != user && this != system;
 }
