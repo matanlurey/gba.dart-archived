@@ -11,94 +11,94 @@ import 'package:arm7_tdmi/src/utils/bits.dart';
 /// |N |Z |C |V |Reserved|J |Reserved|I|F|T|M[4:0]|
 /// ```
 class StatusRegister {
-  int _byte;
+  int _word;
 
-  StatusRegister([this._byte = 0]);
+  StatusRegister([this._word = 0]);
 
-  /// Byte that represents this register.
-  int get byte => _byte;
+  /// Word that represents this register.
+  int get word => _word;
 
   /// Whether fast-interrupts is disabled.
-  bool get isFastInterruptsDisabled => isSet(getBit(6, _byte));
+  bool get isFastInterruptsDisabled => isSet(getBit(6, _word));
 
   /// Enable fast-interrupts.
   void enableFastInterrupts() {
-    _byte = unsetBit(6, _byte);
+    _word = unsetBit(6, _word);
   }
 
   /// Disable fast-interrupts.
   void disableFastInterrupts() {
-    _byte = setBit(6, _byte);
+    _word = setBit(6, _word);
   }
 
   /// Whether interrupts is disabled.
-  bool get isInterruptsDisabled => isSet(getBit(7, _byte));
+  bool get isInterruptsDisabled => isSet(getBit(7, _word));
 
   /// Enable interrupts.
   void enableInterrupts() {
-    _byte = unsetBit(7, _byte);
+    _word = unsetBit(7, _word);
   }
 
   /// Disable interrupts.
   void disableInterrupts() {
-    _byte = setBit(7, _byte);
+    _word = setBit(7, _word);
   }
 
   /// Whether to overflow.
-  bool get isOverflow => isSet(getBit(28, _byte));
+  bool get isOverflow => isSet(getBit(28, _word));
 
   /// Enable overflow.
   void enableOverflow() {
-    _byte = setBit(28, _byte);
+    _word = setBit(28, _word);
   }
 
   /// Disable overflow.
   void disableOverflow() {
-    _byte = unsetBit(28, _byte);
+    _word = unsetBit(28, _word);
   }
 
   bool get isBorrow => !isCarry;
 
   /// Whether to carry.
-  bool get isCarry => isSet(getBit(29, _byte));
+  bool get isCarry => isSet(getBit(29, _word));
 
   /// Enable carry (disabling borrow).
   void enableCarry() {
-    _byte = setBit(29, _byte);
+    _word = setBit(29, _word);
   }
 
   /// Disable carry (enabling borrow).
   void disableCarry() {
-    _byte = unsetBit(29, _byte);
+    _word = unsetBit(29, _word);
   }
 
   /// Whether to use zero; otherwise is non-zero.
-  bool get isZero => isSet(getBit(30, _byte));
+  bool get isZero => isSet(getBit(30, _word));
 
   /// Set zero.
   void setZero() {
-    _byte = setBit(30, _byte);
+    _word = setBit(30, _word);
   }
 
   /// Set non-zero.
   void setNonZero() {
-    _byte = unsetBit(30, _byte);
+    _word = unsetBit(30, _word);
   }
 
   /// Whether signed; otherwise unsigned.
-  bool get isSigned => isSet(getBit(31, _byte));
+  bool get isSigned => isSet(getBit(31, _word));
 
   /// Whether unsigned.
-  bool get isUnsigned => isUnset(getBit(31, _byte));
+  bool get isUnsigned => isUnset(getBit(31, _word));
 
   /// Set signed.
   void setSigned() {
-    _byte = setBit(31, _byte);
+    _word = setBit(31, _word);
   }
 
   /// Set unsigned.
   void setUnsigned() {
-    _byte = unsetBit(31, _byte);
+    _word = unsetBit(31, _word);
   }
 
   @override
