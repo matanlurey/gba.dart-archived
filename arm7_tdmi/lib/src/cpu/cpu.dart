@@ -1,10 +1,14 @@
 import 'dart:typed_data';
 
+import 'package:arm7_tdmi/src/cpu/psr.dart';
 import 'package:meta/meta.dart';
 
 /// ARM7/TDMI processor.
 class Cpu {
   int _modeFlags;
+
+  /// Current program status registers.
+  final ProgramStatusRegisters currentProgramStatusRegister;
 
   /// Stores the current value of a CPSR when an exception is taken.
   ///
@@ -16,7 +20,7 @@ class Cpu {
   /// instruction set state can be accessed from the SPSR in any exception mode,
   /// using the `MSR` and `MRS` instruction. You cannot access the SPSR using
   /// `MSR` or `MRS` in User or System mode.
-  final Uint16List savedProgramStatusRegister;
+  final ProgramStatusRegisters savedProgramStatusRegister;
 
   /// Normal `R0-R15` registers.
   ///
@@ -48,13 +52,8 @@ class Cpu {
   factory Cpu() {
     return new Cpu.from(
       modeFlags: 0xD3,
-      savedProgramStatusRegister: new Uint16List.fromList(const [
-        0xD3, // FIQ
-        0xD3, // IRQ
-        0xD3, // Supervisor
-        0xD3, // Abort
-        0xD3, // Undefined
-      ]),
+      currentProgramStatusRegister: new ProgramStatusRegisters(),
+      savedProgramStatusRegister: new ProgramStatusRegisters(),
       registers: new Uint32List(16),
       registersUsr: new Uint32List(7),
       registersFiq: new Uint32List(7),
@@ -67,6 +66,7 @@ class Cpu {
 
   Cpu.from({
     @required int modeFlags,
+    @required this.currentProgramStatusRegister,
     @required this.savedProgramStatusRegister,
     @required this.registers,
     @required this.registersUsr,
