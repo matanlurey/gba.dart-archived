@@ -18,13 +18,23 @@ class _DefaultEmulator implements Emulator {
 
   @override
   void stop() {
-    assert(isRunning, 'Not running');
+    assert(() {
+      if (!isRunning) {
+        throw new AssertionError('Not running');
+      }
+      return true;
+    });
     isRunning = false;
   }
 
   @override
   void run() {
-    assert(!isRunning, 'Already running');
+    assert(() {
+      if (isRunning) {
+        throw new AssertionError('Already running');
+      }
+      return true;
+    });
     isRunning = true;
   }
 }
