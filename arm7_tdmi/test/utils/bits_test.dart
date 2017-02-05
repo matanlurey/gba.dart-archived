@@ -1,5 +1,6 @@
 import 'package:arm7_tdmi/src/utils/bits.dart';
 import 'package:test/test.dart';
+import 'dart:math';
 
 void main() {
   group('bits', () {
@@ -53,6 +54,37 @@ void main() {
       expect(getBitRange(23, 16, word), 0x02);
       expect(getBitRange(15, 8, word), 0x03);
       expect(getBitRange(7, 0, word), 0x04);
+    });
+
+    test('sign should return the 31st bit of the givnen number', () {
+      expect(sign(0x80000000), 1);
+      expect(sign(0x40000000), 0);
+    });
+
+    test('carryFrom should return 1 iff the given operands produce a carry',
+        () {
+      expect(carryFrom(maxSignedInt32, maxSignedInt32), 1);
+      expect(carryFrom(pow(2, 15), pow(2, 15)), 1);
+      expect(carryFrom(pow(2, 15), pow(2, 15) - 1), 0);
+      expect(carryFrom(1, 0), 0);
+      expect(carryFrom(0, 0), 0);
+    });
+
+    test('overflowFromAdd should return 1 iff an addition produces an overflow',
+        () {
+      expect(overflowFromAdd(maxSignedInt32, 0), 0);
+      expect(overflowFromAdd(maxSignedInt32, 1), 1);
+      expect(overflowFromAdd(maxSignedInt32 ~/ 2, maxSignedInt32), 1);
+      expect(overflowFromAdd(1, 2), 0);
+    });
+
+    test(
+        'overflowFromSub should return 1 iff a subtraction produces an '
+        'overflow', () {
+      expect(overflowFromSub(minSignedInt32, 0), 0);
+      expect(overflowFromSub(minSignedInt32, 1), 1);
+      expect(overflowFromSub(minSignedInt32 ~/ 2, maxSignedInt32), 1);
+      expect(overflowFromSub(1, 2), 0);
     });
   });
 }
