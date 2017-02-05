@@ -1,4 +1,4 @@
-import 'package:arm7_tdmi/src/cpu/program_status_registers.dart';
+import 'package:arm7_tdmi/src/cpu/psr.dart';
 import 'package:arm7_tdmi/src/instruction/arm/condition.dart';
 import 'package:test/test.dart';
 

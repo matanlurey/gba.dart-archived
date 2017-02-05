@@ -1,4 +1,4 @@
-import 'package:arm7_tdmi/src/cpu/program_status_registers.dart';
+import 'package:arm7_tdmi/src/cpu/psr.dart';
 import 'package:arm7_tdmi/src/utils/bits.dart';
 
 /// A bit string for determining whether an ARM instruction will execute.
