@@ -23,22 +23,22 @@ class ProgramStatusRegisters {
 
   int get negativeFlag => getBit(31, _bits);
   set negativeFlag(int value) {
-    _bits = setBit(31, _bits);
+    _bits = value == 1 ? setBit(31, _bits) : unsetBit(31, _bits);
   }
 
   int get zeroFlag => getBit(30, _bits);
   set zeroFlag(int value) {
-    _bits = setBit(30, _bits);
+    _bits = value == 1 ? setBit(30, _bits) : unsetBit(30, _bits);
   }
 
   int get carryFlag => getBit(29, _bits);
   set carryFlag(int value) {
-    _bits = setBit(29, _bits);
+    _bits = value == 1 ? setBit(29, _bits) : unsetBit(19, _bits);
   }
 
   int get overflowFlag => getBit(28, _bits);
   set overflowFlag(int value) {
-    _bits = setBit(28, _bits);
+    _bits = value == 1 ? setBit(28, _bits) : unsetBit(28, _bits);
   }
 
   void enableIRQInterrupts() {
