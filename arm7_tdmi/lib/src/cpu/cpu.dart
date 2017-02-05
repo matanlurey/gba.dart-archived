@@ -5,8 +5,6 @@ import 'package:meta/meta.dart';
 
 /// ARM7/TDMI processor.
 class Cpu {
-  int _modeFlags;
-
   /// Current program status registers.
   final ProgramStatusRegisters currentProgramStatusRegister;
 
@@ -51,7 +49,6 @@ class Cpu {
 
   factory Cpu() {
     return new Cpu.from(
-      modeFlags: 0xD3,
       currentProgramStatusRegister: new ProgramStatusRegisters(),
       savedProgramStatusRegister: new ProgramStatusRegisters(),
       registers: new Uint32List(16),
@@ -65,7 +62,6 @@ class Cpu {
   }
 
   Cpu.from({
-    @required int modeFlags,
     @required this.currentProgramStatusRegister,
     @required this.savedProgramStatusRegister,
     @required this.registers,
@@ -75,8 +71,5 @@ class Cpu {
     @required this.registersAbt,
     @required this.registersIrq,
     @required this.registersUnd,
-  })
-      : _modeFlags = modeFlags;
-
-  int get modeFlags => _modeFlags;
+  });
 }
