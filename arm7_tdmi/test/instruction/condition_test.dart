@@ -4,231 +4,231 @@ import 'package:test/test.dart';
 
 void main() {
   group('$Condition', () {
-    ProgramStatusRegisters registers;
+    StatusRegister sr;
 
     setUp(() {
-      registers = new ProgramStatusRegisters();
+      sr = new StatusRegister();
     });
 
     test(
         "equal.passes should return true iff the given registers' zero flag is "
         "set", () {
-      expect(Condition.equal.passes(registers), false);
-      registers.zeroFlag = 1;
-      expect(Condition.equal.passes(registers), true);
+      expect(Condition.equal.passes(sr), false);
+      sr.setZero();
+      expect(Condition.equal.passes(sr), true);
     });
 
     test(
         "notEqual.passes should return true iff the given registers' zero flag "
         "is unset", () {
-      expect(Condition.notEqual.passes(registers), true);
-      registers.zeroFlag = 1;
-      expect(Condition.notEqual.passes(registers), false);
+      expect(Condition.notEqual.passes(sr), true);
+      sr.setZero();
+      expect(Condition.notEqual.passes(sr), false);
     });
 
     test(
         "carrySet.passes should return true iff the given registers' carry "
         "flag is unset", () {
-      expect(Condition.carrySet.passes(registers), false);
-      registers.carryFlag = 1;
-      expect(Condition.carrySet.passes(registers), true);
+      expect(Condition.carrySet.passes(sr), false);
+      sr.enableCarry();
+      expect(Condition.carrySet.passes(sr), true);
     });
 
     test(
         "carryClear.passes should return true iff the given registers' carry "
         "flag is unset", () {
-      expect(Condition.carryClear.passes(registers), true);
-      registers.carryFlag = 1;
-      expect(Condition.carryClear.passes(registers), false);
+      expect(Condition.carryClear.passes(sr), true);
+      sr.enableCarry();
+      expect(Condition.carryClear.passes(sr), false);
     });
 
     test(
-        "negative.passes should return true iff the given registers' negative "
+        "negative.passes should return true iff the given registers' signed "
         "flag is set", () {
-      expect(Condition.negative.passes(registers), false);
-      registers.negativeFlag = 1;
-      expect(Condition.negative.passes(registers), true);
+      expect(Condition.negative.passes(sr), false);
+      sr.setSigned();
+      expect(Condition.negative.passes(sr), true);
     });
 
     test(
         "positiveOrZero.passes should return true iff the given registers' "
-        "negative flag is unset", () {
-      expect(Condition.positiveOrZero.passes(registers), true);
-      registers.negativeFlag = 1;
-      expect(Condition.positiveOrZero.passes(registers), false);
+        "signed flag is unset", () {
+      expect(Condition.positiveOrZero.passes(sr), true);
+      sr.setSigned();
+      expect(Condition.positiveOrZero.passes(sr), false);
     });
 
     test(
         "overflow.passes should return true iff the given registers' overflow"
         "flag is set", () {
-      expect(Condition.overflow.passes(registers), false);
-      registers.overflowFlag = 1;
-      expect(Condition.overflow.passes(registers), true);
+      expect(Condition.overflow.passes(sr), false);
+      sr.enableOverflow();
+      expect(Condition.overflow.passes(sr), true);
     });
 
     test(
         "noOverflow.passes should return true iff the given registers' "
         "overflow flag is unset", () {
-      expect(Condition.noOverflow.passes(registers), true);
-      registers.overflowFlag = 1;
-      expect(Condition.noOverflow.passes(registers), false);
+      expect(Condition.noOverflow.passes(sr), true);
+      sr.enableOverflow();
+      expect(Condition.noOverflow.passes(sr), false);
     });
 
     test(
         "unsignedHigher.passes should return true iff the given registers' "
         "carry flag is set and zero flag is unset", () {
-      registers.carryFlag = 0;
-      registers.zeroFlag = 0;
-      expect(Condition.unsignedHigher.passes(registers), false);
+      sr.enableCarry();
+      sr.setZero();
+      expect(Condition.unsignedHigher.passes(sr), false);
 
-      registers.carryFlag = 0;
-      registers.zeroFlag = 1;
-      expect(Condition.unsignedHigher.passes(registers), false);
+      sr.disableCarry();
+      sr.setNonZero();
+      expect(Condition.unsignedHigher.passes(sr), false);
 
-      registers.carryFlag = 1;
-      registers.zeroFlag = 1;
-      expect(Condition.unsignedHigher.passes(registers), false);
+      sr.enableCarry();
+      sr.setZero();
+      expect(Condition.unsignedHigher.passes(sr), false);
 
-      registers.carryFlag = 1;
-      registers.zeroFlag = 0;
-      expect(Condition.unsignedHigher.passes(registers), true);
+      sr.enableCarry();
+      sr.setNonZero();
+      expect(Condition.unsignedHigher.passes(sr), true);
     });
 
     test(
         "unsignedLowerOrSame.passes should return true iff the given "
         "registers' carry flag is unset or the zero flag is set", () {
-      registers.carryFlag = 0;
-      registers.zeroFlag = 0;
-      expect(Condition.unsignedLowerOrSame.passes(registers), true);
+      sr.enableCarry();
+      sr.setZero();
+      expect(Condition.unsignedLowerOrSame.passes(sr), true);
 
-      registers.carryFlag = 1;
-      registers.zeroFlag = 1;
-      expect(Condition.unsignedLowerOrSame.passes(registers), true);
+      sr.disableCarry();
+      sr.setNonZero();
+      expect(Condition.unsignedLowerOrSame.passes(sr), true);
 
-      registers.carryFlag = 1;
-      registers.zeroFlag = 0;
-      expect(Condition.unsignedLowerOrSame.passes(registers), false);
+      sr.enableCarry();
+      sr.setNonZero();
+      expect(Condition.unsignedLowerOrSame.passes(sr), false);
 
-      registers.carryFlag = 0;
-      registers.zeroFlag = 1;
-      expect(Condition.unsignedLowerOrSame.passes(registers), true);
+      sr.disableCarry();
+      sr.setZero();
+      expect(Condition.unsignedLowerOrSame.passes(sr), true);
     });
 
     test(
         "greaterThanOrEqual.passes should return true iff the given "
         "registers' negative and overflow flags are equal", () {
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 0;
-      expect(Condition.greaterThanOrEqual.passes(registers), true);
+      sr.setUnsigned();
+      sr.disableOverflow();
+      expect(Condition.greaterThanOrEqual.passes(sr), true);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 1;
-      expect(Condition.greaterThanOrEqual.passes(registers), true);
+      sr.setSigned();
+      sr.enableOverflow();
+      expect(Condition.greaterThanOrEqual.passes(sr), true);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 0;
-      expect(Condition.greaterThanOrEqual.passes(registers), false);
+      sr.setSigned();
+      sr.disableOverflow();
+      expect(Condition.greaterThanOrEqual.passes(sr), false);
 
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 1;
-      expect(Condition.greaterThanOrEqual.passes(registers), false);
+      sr.setUnsigned();
+      sr.enableOverflow();
+      expect(Condition.greaterThanOrEqual.passes(sr), false);
     });
 
     test(
         "lessThan.passes should return true iff the given registers' negative "
         "and overflow flags are not equal", () {
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 0;
-      expect(Condition.lessThan.passes(registers), false);
+      sr.setUnsigned();
+      sr.disableOverflow();
+      expect(Condition.lessThan.passes(sr), false);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 1;
-      expect(Condition.lessThan.passes(registers), false);
+      sr.setSigned();
+      sr.enableOverflow();
+      expect(Condition.lessThan.passes(sr), false);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 0;
-      expect(Condition.lessThan.passes(registers), true);
+      sr.setSigned();
+      sr.disableOverflow();
+      expect(Condition.lessThan.passes(sr), true);
 
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 1;
-      expect(Condition.lessThan.passes(registers), true);
+      sr.setUnsigned();
+      sr.enableOverflow();
+      expect(Condition.lessThan.passes(sr), true);
     });
 
     test(
         "greaterThan.passes should return true iff the given registers' zero "
         "flag is unset and the negative and overflow flags are equal", () {
-      registers.zeroFlag = 0;
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 0;
-      expect(Condition.greaterThan.passes(registers), true);
+      sr.setNonZero();
+      sr.setUnsigned();
+      sr.disableOverflow();
+      expect(Condition.greaterThan.passes(sr), true);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 1;
-      expect(Condition.greaterThan.passes(registers), true);
+      sr.setSigned();
+      sr.enableOverflow();
+      expect(Condition.greaterThan.passes(sr), true);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 0;
-      expect(Condition.greaterThan.passes(registers), false);
+      sr.setSigned();
+      sr.disableOverflow();
+      expect(Condition.greaterThan.passes(sr), false);
 
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 1;
-      expect(Condition.greaterThan.passes(registers), false);
+      sr.setUnsigned();
+      sr.enableOverflow();
+      expect(Condition.greaterThan.passes(sr), false);
 
-      registers.zeroFlag = 1;
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 0;
-      expect(Condition.greaterThan.passes(registers), false);
+      sr.setZero();
+      sr.setUnsigned();
+      sr.disableOverflow();
+      expect(Condition.greaterThan.passes(sr), false);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 1;
-      expect(Condition.greaterThan.passes(registers), false);
+      sr.setSigned();
+      sr.enableOverflow();
+      expect(Condition.greaterThan.passes(sr), false);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 0;
-      expect(Condition.greaterThan.passes(registers), false);
+      sr.setSigned();
+      sr.disableOverflow();
+      expect(Condition.greaterThan.passes(sr), false);
 
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 1;
-      expect(Condition.greaterThan.passes(registers), false);
+      sr.setUnsigned();
+      sr.enableOverflow();
+      expect(Condition.greaterThan.passes(sr), false);
     });
 
     test(
         "lessThanOrEqual.passes should return true iff the given registers' "
         "negative and overflow flags are not equal or the zero flag is set",
         () {
-      registers.zeroFlag = 1;
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 0;
-      expect(Condition.lessThanOrEqual.passes(registers), true);
+      sr.setZero();
+      sr.setUnsigned();
+      sr.disableOverflow();
+      expect(Condition.lessThanOrEqual.passes(sr), true);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 1;
-      expect(Condition.lessThanOrEqual.passes(registers), true);
+      sr.setSigned();
+      sr.enableOverflow();
+      expect(Condition.lessThanOrEqual.passes(sr), true);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 0;
-      expect(Condition.lessThanOrEqual.passes(registers), true);
+      sr.setSigned();
+      sr.disableOverflow();
+      expect(Condition.lessThanOrEqual.passes(sr), true);
 
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 1;
-      expect(Condition.lessThanOrEqual.passes(registers), true);
+      sr.setUnsigned();
+      sr.enableOverflow();
+      expect(Condition.lessThanOrEqual.passes(sr), true);
 
-      registers.zeroFlag = 0;
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 0;
-      expect(Condition.lessThanOrEqual.passes(registers), false);
+      sr.setNonZero();
+      sr.setUnsigned();
+      sr.disableOverflow();
+      expect(Condition.lessThanOrEqual.passes(sr), false);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 1;
-      expect(Condition.lessThanOrEqual.passes(registers), false);
+      sr.setSigned();
+      sr.enableOverflow();
+      expect(Condition.lessThanOrEqual.passes(sr), false);
 
-      registers.negativeFlag = 1;
-      registers.overflowFlag = 0;
-      expect(Condition.lessThanOrEqual.passes(registers), true);
+      sr.setSigned();
+      sr.disableOverflow();
+      expect(Condition.lessThanOrEqual.passes(sr), true);
 
-      registers.negativeFlag = 0;
-      registers.overflowFlag = 1;
-      expect(Condition.lessThanOrEqual.passes(registers), true);
+      sr.setUnsigned();
+      sr.enableOverflow();
+      expect(Condition.lessThanOrEqual.passes(sr), true);
     });
   });
 }

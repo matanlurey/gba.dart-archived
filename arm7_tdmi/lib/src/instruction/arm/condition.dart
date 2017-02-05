@@ -1,5 +1,4 @@
 import 'package:arm7_tdmi/src/cpu/psr.dart';
-import 'package:arm7_tdmi/src/utils/bits.dart';
 
 /// A bit string for determining whether an ARM instruction will execute.
 ///
@@ -60,7 +59,7 @@ abstract class Condition {
   String get description;
 
   /// Returns true iff the state of [registers] passes this [Condition].
-  bool passes(ProgramStatusRegisters registers);
+  bool passes(StatusRegister registers);
 
   @override
   String toString() => name;
@@ -79,7 +78,7 @@ class _Equal implements Condition {
   final int value = 0;
 
   @override
-  bool passes(ProgramStatusRegisters registers) => isSet(registers.zeroFlag);
+  bool passes(StatusRegister sr) => sr.isZero;
 }
 
 class _NotEqual implements Condition {
@@ -95,7 +94,7 @@ class _NotEqual implements Condition {
   final int value = 1;
 
   @override
-  bool passes(ProgramStatusRegisters registers) => isUnset(registers.zeroFlag);
+  bool passes(StatusRegister sr) => !sr.isZero;
 }
 
 class _CarrySet implements Condition {
@@ -111,7 +110,7 @@ class _CarrySet implements Condition {
   final int value = 2;
 
   @override
-  bool passes(ProgramStatusRegisters registers) => isSet(registers.carryFlag);
+  bool passes(StatusRegister sr) => sr.isCarry;
 }
 
 class _CarryClear implements Condition {
@@ -127,7 +126,7 @@ class _CarryClear implements Condition {
   final int value = 3;
 
   @override
-  bool passes(ProgramStatusRegisters registers) => isUnset(registers.carryFlag);
+  bool passes(StatusRegister sr) => !sr.isCarry;
 }
 
 class _Negative implements Condition {
@@ -143,8 +142,7 @@ class _Negative implements Condition {
   final int value = 4;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      isSet(registers.negativeFlag);
+  bool passes(StatusRegister sr) => sr.isSigned;
 }
 
 class _PositiveOrZero implements Condition {
@@ -160,8 +158,7 @@ class _PositiveOrZero implements Condition {
   final int value = 5;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      isUnset(registers.negativeFlag);
+  bool passes(StatusRegister sr) => !sr.isSigned;
 }
 
 class _Overflow implements Condition {
@@ -177,8 +174,7 @@ class _Overflow implements Condition {
   final int value = 6;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      isSet(registers.overflowFlag);
+  bool passes(StatusRegister sr) => sr.isOverflow;
 }
 
 class _NoOverflow implements Condition {
@@ -194,8 +190,7 @@ class _NoOverflow implements Condition {
   final int value = 7;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      isUnset(registers.overflowFlag);
+  bool passes(StatusRegister sr) => !sr.isOverflow;
 }
 
 class _UnsignedHigher implements Condition {
@@ -211,8 +206,7 @@ class _UnsignedHigher implements Condition {
   final int value = 8;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      isSet(registers.carryFlag) && isUnset(registers.zeroFlag);
+  bool passes(StatusRegister sr) => sr.isCarry && !sr.isZero;
 }
 
 class _UnsignedLowerOrSame implements Condition {
@@ -228,8 +222,7 @@ class _UnsignedLowerOrSame implements Condition {
   final int value = 9;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      isUnset(registers.carryFlag) || isSet(registers.zeroFlag);
+  bool passes(StatusRegister sr) => !sr.isCarry || sr.isZero;
 }
 
 class _GreaterThanOrEqual implements Condition {
@@ -245,8 +238,7 @@ class _GreaterThanOrEqual implements Condition {
   final int value = 0xA;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      registers.negativeFlag == registers.overflowFlag;
+  bool passes(StatusRegister sr) => sr.isSigned == sr.isOverflow;
 }
 
 class _LessThan implements Condition {
@@ -262,8 +254,7 @@ class _LessThan implements Condition {
   final int value = 0xB;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      registers.negativeFlag != registers.overflowFlag;
+  bool passes(StatusRegister sr) => sr.isSigned != sr.isOverflow;
 }
 
 class _GreaterThan implements Condition {
@@ -279,9 +270,7 @@ class _GreaterThan implements Condition {
   final int value = 0xC;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      isUnset(registers.zeroFlag) &&
-      registers.negativeFlag == registers.overflowFlag;
+  bool passes(StatusRegister sr) => !sr.isZero && sr.isSigned == sr.isOverflow;
 }
 
 class _LessThanOrEqual implements Condition {
@@ -297,9 +286,7 @@ class _LessThanOrEqual implements Condition {
   final int value = 0xD;
 
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      isSet(registers.zeroFlag) ||
-      registers.negativeFlag != registers.overflowFlag;
+  bool passes(StatusRegister sr) => sr.isZero || sr.isSigned != sr.isOverflow;
 }
 
 class _Always implements Condition {
@@ -315,7 +302,7 @@ class _Always implements Condition {
   final int value = 0xE;
 
   @override
-  bool passes(ProgramStatusRegisters registers) => true;
+  bool passes(StatusRegister registers) => true;
 }
 
 class _Reserved implements Condition {

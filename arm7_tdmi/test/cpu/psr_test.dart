@@ -3,99 +3,89 @@ import 'package:arm7_tdmi/src/utils/bits.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('$ProgramStatusRegisters', () {
-    ProgramStatusRegisters registers;
+  group('$StatusRegister', () {
+    StatusRegister sr;
 
     setUp(() {
-      registers = new ProgramStatusRegisters();
+      sr = new StatusRegister();
     });
 
-    test('negativeFlag should read and write bit 31.', () {
-      expect(isSet(registers.negativeFlag), false);
-      expect(isSet(getBit(31, registers.dump())), false);
+    test('signed/unsigned should read and write bit 31.', () {
+      expect(sr.isSigned, isFalse);
+      expect(isSet(getBit(31, sr.word)), isFalse);
 
-      registers.negativeFlag = 1;
-      expect(isSet(registers.negativeFlag), true);
-      expect(isSet(getBit(31, registers.dump())), true);
+      sr.setSigned();
+      expect(sr.isSigned, isTrue);
+      expect(isSet(getBit(31, sr.word)), isTrue);
 
-      registers.negativeFlag = 0;
-      expect(isSet(registers.negativeFlag), false);
-      expect(isSet(getBit(31, registers.dump())), false);
+      sr.setUnsigned();
+      expect(sr.isSigned, isFalse);
+      expect(isSet(getBit(31, sr.word)), isFalse);
     });
 
-    test('zeroFlag should read and write bit 30', () {
-      expect(isSet(registers.zeroFlag), false);
-      expect(isSet(getBit(30, registers.dump())), false);
+    test('zero/nonZero should read and write bit 30', () {
+      expect(sr.isZero, isFalse);
+      expect(isSet(getBit(30, sr.word)), isFalse);
 
-      registers.zeroFlag = 1;
-      expect(isSet(registers.zeroFlag), true);
-      expect(isSet(getBit(30, registers.dump())), true);
+      sr.setZero();
+      expect(sr.isZero, isTrue);
+      expect(isSet(getBit(30, sr.word)), isTrue);
 
-      registers.zeroFlag = 0;
-      expect(isSet(registers.zeroFlag), false);
-      expect(isSet(getBit(30, registers.dump())), false);
+      sr.setNonZero();
+      expect(sr.isZero, isFalse);
+      expect(isSet(getBit(30, sr.word)), isFalse);
     });
 
-    test('carryFlag should read and write bit 29', () {
-      expect(isSet(registers.carryFlag), false);
-      expect(isSet(getBit(29, registers.dump())), false);
+    test('carry/borrow should read and write bit 29', () {
+      expect(sr.isCarry, isFalse);
+      expect(isSet(getBit(29, sr.word)), isFalse);
 
-      registers.carryFlag = 1;
-      expect(isSet(registers.carryFlag), true);
-      expect(isSet(getBit(29, registers.dump())), true);
+      sr.enableCarry();
+      expect(sr.isCarry, isTrue);
+      expect(isSet(getBit(29, sr.word)), isTrue);
 
-      registers.carryFlag = 0;
-      expect(isSet(registers.carryFlag), true);
-      expect(isSet(getBit(29, registers.dump())), true);
+      sr.disableCarry();
+      expect(sr.isCarry, isFalse);
+      expect(isSet(getBit(29, sr.word)), isFalse);
     });
 
-    test('overflowFlag should read and write bit 28', () {
-      expect(isSet(registers.overflowFlag), false);
-      expect(isSet(getBit(28, registers.dump())), false);
+    test('overflow should read and write bit 28', () {
+      expect(sr.isOverflow, isFalse);
+      expect(isSet(getBit(28, sr.word)), isFalse);
 
-      registers.overflowFlag = 1;
-      expect(isSet(registers.overflowFlag), true);
-      expect(isSet(getBit(28, registers.dump())), true);
+      sr.enableOverflow();
+      expect(sr.isOverflow, isTrue);
+      expect(isSet(getBit(28, sr.word)), isTrue);
 
-      registers.overflowFlag = 0;
-      expect(isSet(registers.overflowFlag), false);
-      expect(isSet(getBit(28, registers.dump())), false);
+      sr.disableOverflow();
+      expect(sr.isOverflow, isFalse);
+      expect(isSet(getBit(28, sr.word)), isFalse);
     });
 
-    test('enableIRQInterrupts should set bit 7.', () {
-      expect(registers.areIRQInterruptsEnabled, true);
-      expect(isSet(getBit(7, registers.dump())), false);
+    test('fast interrupts should set bit 6.', () {
+      expect(sr.isFastInterruptsDisabled, isFalse);
+      expect(isSet(getBit(6, sr.word)), isFalse);
 
-      registers.enableIRQInterrupts();
-      expect(registers.areIRQInterruptsEnabled, true);
-      expect(isSet(getBit(7, registers.dump())), false);
+      sr.disableFastInterrupts();
+      expect(sr.isFastInterruptsDisabled, isTrue);
+      expect(isSet(getBit(6, sr.word)), isTrue);
+
+      sr.enableFastInterrupts();
+      expect(sr.isFastInterruptsDisabled, isFalse);
+      expect(isSet(getBit(6, sr.word)), isFalse);
     });
 
-    test('disableIRQInterrupts should set bit 7.', () {
-      expect(registers.areIRQInterruptsEnabled, true);
-      expect(isSet(getBit(7, registers.dump())), false);
+    test('interrupts should set bit 7.', () {
+      expect(sr.isInterruptsDisabled, isFalse);
+      expect(isSet(getBit(7, sr.word)), isFalse);
 
-      registers.disableIRQInterrupts();
-      expect(registers.areIRQInterruptsEnabled, false);
-      expect(isSet(getBit(7, registers.dump())), true);
-    });
+      sr.disableInterrupts();
+      expect(sr.isInterruptsDisabled, isTrue);
+      expect(isSet(getBit(7, sr.word)), isTrue);
 
-    test('enableFIQInterrupts should set bit 6.', () {
-      expect(registers.areFIQInterruptsEnabled, true);
-      expect(isSet(getBit(6, registers.dump())), false);
-
-      registers.enableFIQInterrupts();
-      expect(registers.areFIQInterruptsEnabled, true);
-      expect(isSet(getBit(6, registers.dump())), false);
-    });
-
-    test('disableFIQInterrupts should set bit 6.', () {
-      expect(registers.areFIQInterruptsEnabled, true);
-      expect(isSet(getBit(6, registers.dump())), false);
-
-      registers.disableFIQInterrupts();
-      expect(registers.areFIQInterruptsEnabled, false);
-      expect(isSet(getBit(6, registers.dump())), true);
+      sr.enableInterrupts();
+      expect(sr.isInterruptsDisabled, isFalse);
+      expect(isSet(getBit(7, sr.word)), isFalse);
     });
   });
 }
