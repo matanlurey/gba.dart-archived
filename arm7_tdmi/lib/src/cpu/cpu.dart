@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:arm7_tdmi/src/cpu/operating_modes.dart';
 import 'package:arm7_tdmi/src/cpu/psr.dart';
 import 'package:meta/meta.dart';
 
@@ -47,6 +48,11 @@ class Cpu {
   /// Undefined mode registers (R13-R14).
   final Uint32List registersUnd;
 
+  /// The processor's current operating mode.
+  ///
+  /// Defaults to [OperatingMode.user].
+  OperatingMode operatingMode;
+
   factory Cpu() {
     return new Cpu.from(
       cpsr: new StatusRegister(),
@@ -58,6 +64,7 @@ class Cpu {
       registersAbt: new Uint32List(2),
       registersIrq: new Uint32List(2),
       registersUnd: new Uint32List(2),
+      operatingMode: OperatingMode.user,
     );
   }
 
@@ -71,6 +78,7 @@ class Cpu {
     @required this.registersAbt,
     @required this.registersIrq,
     @required this.registersUnd,
+    @required this.operatingMode,
   });
 
   int get linkRegister => registers[14];
