@@ -20,7 +20,7 @@ class _DefaultEmulator implements Emulator {
   void stop() {
     assert(() {
       if (!isRunning) {
-        throw new AssertionError('Not running');
+        throw 'Not running';
       }
       return true;
     });
@@ -31,7 +31,7 @@ class _DefaultEmulator implements Emulator {
   void run() {
     assert(() {
       if (isRunning) {
-        throw new AssertionError('Already running');
+        throw 'Already running';
       }
       return true;
     });
