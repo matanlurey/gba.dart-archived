@@ -5,48 +5,49 @@ import 'package:arm7_tdmi/src/utils/bits.dart';
 ///
 /// A [Condition] is derived from bits 31-28 of an ARM instruction.
 abstract class Condition {
-  static final Condition equal = new _Equal._();
-  static final Condition notEqual = new _NotEqual._();
-  static final Condition carrySet = new _CarrySet._();
-  static final Condition carryClear = new _CarryClear._();
-  static final Condition negative = new _Negative._();
-  static final Condition positiveOrZero = new _PositiveOrZero._();
-  static final Condition overflow = new _Overflow._();
-  static final Condition noOverflow = new _NoOverflow._();
-  static final Condition unsignedHigher = new _UnsignedHigher._();
-  static final Condition unsignedLowerOrSame = new _UnsignedLowerOrSame._();
-  static final Condition greaterThanOrEqual = new _GreaterThanOrEqual._();
-  static final Condition lessThan = new _LessThan._();
-  static final Condition greaterThan = new _GreaterThan._();
-  static final Condition lessThanOrEqual = new _LessThanOrEqual._();
-  static final Condition always = new _Always._();
-  static final Condition unpredictable = new _Unpredictable._();
+  static const Condition equal = const _Equal();
+  static const Condition notEqual = const _NotEqual();
+  static const Condition carrySet = const _CarrySet();
+  static const Condition carryClear = const _CarryClear();
+  static const Condition negative = const _Negative();
+  static const Condition positiveOrZero = const _PositiveOrZero();
+  static const Condition overflow = const _Overflow();
+  static const Condition noOverflow = const _NoOverflow();
+  static const Condition unsignedHigher = const _UnsignedHigher();
+  static const Condition unsignedLowerOrSame = const _UnsignedLowerOrSame();
+  static const Condition greaterThanOrEqual = const _GreaterThanOrEqual();
+  static const Condition lessThan = const _LessThan();
+  static const Condition greaterThan = const _GreaterThan();
+  static const Condition lessThanOrEqual = const _LessThanOrEqual();
+  static const Condition always = const _Always();
+  static const Condition reserved = const _Reserved();
 
-  static final Map<int, Condition> _valueToCondition = <int, Condition>{
-    equal.value: equal,
-    notEqual.value: notEqual,
-    carrySet.value: carrySet,
-    carryClear.value: carryClear,
-    negative.value: negative,
-    positiveOrZero.value: positiveOrZero,
-    overflow.value: overflow,
-    noOverflow.value: noOverflow,
-    unsignedHigher.value: unsignedHigher,
-    unsignedLowerOrSame.value: unsignedLowerOrSame,
-    greaterThanOrEqual.value: greaterThanOrEqual,
-    lessThan.value: lessThan,
-    greaterThan.value: greaterThan,
-    lessThanOrEqual.value: lessThanOrEqual,
-    always.value: always,
-    unpredictable.value: unpredictable,
-  };
+  static final _valueToCondition = new Map<int, Condition>.fromIterable(const [
+    equal,
+    notEqual,
+    carrySet,
+    carryClear,
+    negative,
+    positiveOrZero,
+    overflow,
+    noOverflow,
+    unsignedHigher,
+    unsignedLowerOrSame,
+    greaterThanOrEqual,
+    lessThan,
+    greaterThan,
+    lessThanOrEqual,
+    always,
+    reserved,
+  ], key: (condition) => condition.value);
 
   /// Returns the [Condition] whose 4-bit string matches [nibble].
   factory Condition.fromBits(int nibble) {
-    if (_valueToCondition.containsKey(nibble)) {
-      return _valueToCondition[nibble];
+    final condition = _valueToCondition[nibble];
+    if (condition == null) {
+      throw new UnsupportedError('Condition $nibble.');
     }
-    throw new UnsupportedError('condition $nibble');
+    return condition;
   }
 
   /// The value representing this [Condition].
@@ -54,6 +55,9 @@ abstract class Condition {
 
   /// The mnemonic representing this [Condition].
   String get name;
+
+  /// Meaning of this condition.
+  String get description;
 
   /// Returns true iff the state of [registers] passes this [Condition].
   bool passes(ProgramStatusRegisters registers);
@@ -63,10 +67,13 @@ abstract class Condition {
 }
 
 class _Equal implements Condition {
-  const _Equal._();
+  const _Equal();
 
   @override
   final String name = 'EQ';
+
+  @override
+  final String description = 'equal (zero) (same)';
 
   @override
   final int value = 0;
@@ -76,10 +83,13 @@ class _Equal implements Condition {
 }
 
 class _NotEqual implements Condition {
-  const _NotEqual._();
+  const _NotEqual();
 
   @override
   final String name = 'NE';
+
+  @override
+  final String description = 'not equal (nonzero) (not same)';
 
   @override
   final int value = 1;
@@ -89,10 +99,13 @@ class _NotEqual implements Condition {
 }
 
 class _CarrySet implements Condition {
-  const _CarrySet._();
+  const _CarrySet();
 
   @override
   final String name = 'CS';
+
+  @override
+  final String description = 'unsigned higher or same (carry set)';
 
   @override
   final int value = 2;
@@ -102,10 +115,13 @@ class _CarrySet implements Condition {
 }
 
 class _CarryClear implements Condition {
-  const _CarryClear._();
+  const _CarryClear();
 
   @override
   final String name = 'CC';
+
+  @override
+  final String description = 'unsigned lower (carry cleared)';
 
   @override
   final int value = 3;
@@ -115,10 +131,13 @@ class _CarryClear implements Condition {
 }
 
 class _Negative implements Condition {
-  const _Negative._();
+  const _Negative();
 
   @override
   final String name = 'MI';
+
+  @override
+  final String description = 'negative (minus)';
 
   @override
   final int value = 4;
@@ -129,10 +148,13 @@ class _Negative implements Condition {
 }
 
 class _PositiveOrZero implements Condition {
-  const _PositiveOrZero._();
+  const _PositiveOrZero();
 
   @override
   final String name = 'PL';
+
+  @override
+  final String description = 'positive or zero (plus)';
 
   @override
   final int value = 5;
@@ -143,10 +165,13 @@ class _PositiveOrZero implements Condition {
 }
 
 class _Overflow implements Condition {
-  const _Overflow._();
+  const _Overflow();
 
   @override
   final String name = 'VS';
+
+  @override
+  final String description = 'overflow (V set)';
 
   @override
   final int value = 6;
@@ -157,10 +182,13 @@ class _Overflow implements Condition {
 }
 
 class _NoOverflow implements Condition {
-  const _NoOverflow._();
+  const _NoOverflow();
 
   @override
   final String name = 'VC';
+
+  @override
+  final String description = 'no overflow (V cleared)';
 
   @override
   final int value = 7;
@@ -171,10 +199,13 @@ class _NoOverflow implements Condition {
 }
 
 class _UnsignedHigher implements Condition {
-  const _UnsignedHigher._();
+  const _UnsignedHigher();
 
   @override
   final String name = 'HI';
+
+  @override
+  final String description = 'unsigned higher';
 
   @override
   final int value = 8;
@@ -185,10 +216,13 @@ class _UnsignedHigher implements Condition {
 }
 
 class _UnsignedLowerOrSame implements Condition {
-  const _UnsignedLowerOrSame._();
+  const _UnsignedLowerOrSame();
 
   @override
   final String name = 'LS';
+
+  @override
+  final String description = 'unsigned lower or same';
 
   @override
   final int value = 9;
@@ -199,13 +233,16 @@ class _UnsignedLowerOrSame implements Condition {
 }
 
 class _GreaterThanOrEqual implements Condition {
-  const _GreaterThanOrEqual._();
+  const _GreaterThanOrEqual();
 
   @override
   final String name = 'GE';
 
   @override
-  final int value = 10;
+  final String description = 'greater or equal';
+
+  @override
+  final int value = 0xA;
 
   @override
   bool passes(ProgramStatusRegisters registers) =>
@@ -213,13 +250,16 @@ class _GreaterThanOrEqual implements Condition {
 }
 
 class _LessThan implements Condition {
-  const _LessThan._();
+  const _LessThan();
 
   @override
   final String name = 'LT';
 
   @override
-  final int value = 11;
+  final String description = 'less than';
+
+  @override
+  final int value = 0xB;
 
   @override
   bool passes(ProgramStatusRegisters registers) =>
@@ -227,13 +267,16 @@ class _LessThan implements Condition {
 }
 
 class _GreaterThan implements Condition {
-  const _GreaterThan._();
+  const _GreaterThan();
 
   @override
   final String name = 'GT';
 
   @override
-  final int value = 12;
+  final String description = 'greater than';
+
+  @override
+  final int value = 0xC;
 
   @override
   bool passes(ProgramStatusRegisters registers) =>
@@ -242,13 +285,16 @@ class _GreaterThan implements Condition {
 }
 
 class _LessThanOrEqual implements Condition {
-  const _LessThanOrEqual._();
+  const _LessThanOrEqual();
 
   @override
   final String name = 'LE';
 
   @override
-  final int value = 13;
+  final String description = 'less or equal';
+
+  @override
+  final int value = 0xD;
 
   @override
   bool passes(ProgramStatusRegisters registers) =>
@@ -257,29 +303,33 @@ class _LessThanOrEqual implements Condition {
 }
 
 class _Always implements Condition {
-  const _Always._();
+  const _Always();
 
   @override
   final String name = 'AL';
 
   @override
-  final int value = 14;
+  final String description = 'always (the "AL" suffix can be omitted)';
+
+  @override
+  final int value = 0xE;
 
   @override
   bool passes(ProgramStatusRegisters registers) => true;
 }
 
-class _Unpredictable implements Condition {
-  const _Unpredictable._();
+class _Reserved implements Condition {
+  const _Reserved();
 
   @override
-  final String name = 'UNPREDICTABLE';
+  String get name => throw new UnsupportedError('ARMv1, v2 only');
 
   @override
-  final int value = 15;
+  final String description = 'equal (zero) (same)';
 
-  // It's unclear what this does at the moment.
   @override
-  bool passes(ProgramStatusRegisters registers) =>
-      throw new UnimplementedError();
+  final int value = 0xF;
+
+  @override
+  bool passes(_) => throw new UnsupportedError('ARMv1, v2 only');
 }
