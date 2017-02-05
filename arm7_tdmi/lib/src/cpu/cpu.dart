@@ -66,25 +66,17 @@ class Cpu {
   }
 
   Cpu.from({
-    @required
-    int modeFlags,
-    @required
-    this.savedProgramStatusRegister,
-    @required
-    this.registers,
-    @required
-    this.registersUsr,
-    @required
-    this.registersFiq,
-    @required
-    this.registersSvc,
-    @required
-    this.registersAbt,
-    @required
-    this.registersIrq,
-    @required
-    this.registersUnd,
-  }) : _modeFlags = modeFlags;
+    @required int modeFlags,
+    @required this.savedProgramStatusRegister,
+    @required this.registers,
+    @required this.registersUsr,
+    @required this.registersFiq,
+    @required this.registersSvc,
+    @required this.registersAbt,
+    @required this.registersIrq,
+    @required this.registersUnd,
+  })
+      : _modeFlags = modeFlags;
 
   int get modeFlags => _modeFlags;
 }
