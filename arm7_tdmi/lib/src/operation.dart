@@ -1,5 +1,7 @@
 library arm7_tdmi.src.operation;
 
+import 'package:meta/meta.dart';
+
 part 'operation/arithmetic.dart';
 part 'operation/branch.dart';
 part 'operation/coprocessors.dart';
@@ -9,10 +11,15 @@ part 'operation/move.dart';
 part 'operation/store.dart';
 part 'operation/swap.dart';
 
+/// An ARM7-TDMI instruction/operation.
 class Operation {
+  /// Mnemonic name.
   final String name;
+
+  /// Longer description.
   final String description;
 
+  @literal
   const Operation._(this.name, this.description);
 }
 
