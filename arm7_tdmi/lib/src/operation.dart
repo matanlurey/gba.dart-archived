@@ -10,7 +10,10 @@ part 'operation/move.dart';
 part 'operation/store.dart';
 
 class Operation {
-  const Operation._(String description);
+  final String name;
+  final String description;
+
+  const Operation._(this.name, this.description);
 }
 
 /// Operations related to arithmetic.
