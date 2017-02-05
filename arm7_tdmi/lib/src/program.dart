@@ -21,4 +21,3 @@ abstract class Program {
   /// Executes the program in the context of the given [cpu] and [memory].
   void execute(cpu, memory);
 }
-
