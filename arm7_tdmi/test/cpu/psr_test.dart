@@ -19,8 +19,8 @@ void main() {
       expect(isSet(getBit(31, registers.dump())), true);
 
       registers.negativeFlag = 0;
-      expect(isSet(registers.negativeFlag), true);
-      expect(isSet(getBit(31, registers.dump())), true);
+      expect(isSet(registers.negativeFlag), false);
+      expect(isSet(getBit(31, registers.dump())), false);
     });
 
     test('zeroFlag should read and write bit 30', () {
@@ -32,8 +32,8 @@ void main() {
       expect(isSet(getBit(30, registers.dump())), true);
 
       registers.zeroFlag = 0;
-      expect(isSet(registers.zeroFlag), true);
-      expect(isSet(getBit(30, registers.dump())), true);
+      expect(isSet(registers.zeroFlag), false);
+      expect(isSet(getBit(30, registers.dump())), false);
     });
 
     test('carryFlag should read and write bit 29', () {
@@ -58,8 +58,8 @@ void main() {
       expect(isSet(getBit(28, registers.dump())), true);
 
       registers.overflowFlag = 0;
-      expect(isSet(registers.overflowFlag), true);
-      expect(isSet(getBit(28, registers.dump())), true);
+      expect(isSet(registers.overflowFlag), false);
+      expect(isSet(getBit(28, registers.dump())), false);
     });
 
     test('enableIRQInterrupts should set bit 7.', () {
