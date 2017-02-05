@@ -1,0 +1,19 @@
+0009 - MUL Rd, Rm, R
+03cf - BIC Rd, Rm
+0086 - ADD Rd,Rb,Rm ROR
+0080 - ADD Rd,Rb,Rm LSL
+0250 - SUBS , ROR
+0290 - ADDS, ROR
+008c - ADD, Rd,Rb,Rm ASR
+01ba - MOVS, Rd,Rb,Rm LSR
+0afe - B FE (branch of FE instructions)
+0040 - SUB Rd,Rb,Rm LSL
+01fd - LDRSB Rd, [Rn, #offset]!
+0050 - SUBS Rd,Rb,Rm LSL
+01bd - LDRSB Rd, [Rn, Rm]!
+019d - LDRSB Rd, [Rn, Rm]
+0590 - LDR Rd, [Rn, #]
+0480 - STR Rd, [Rn], #
+0583 - STR Rd, [Rn, #]
+0593 - LDR Rd, [Rn, #]
+0aff - B FF

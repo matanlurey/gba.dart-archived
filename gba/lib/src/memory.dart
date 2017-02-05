@@ -6,12 +6,25 @@ import 'package:meta/meta.dart';
 
 /// Access into all of the RAM for the emulator.
 class MemoryManager {
+  // 16kb.
   static const _ramSizeBios = 0x4000;
+
+  // 256kb.
   static const _ramSizeWork = 0x40000;
+
+  // 32kb.
   static const _ramSizeInternal = 0x8000;
+
+  // 1kb.
   static const _ramSizeIO = 0x400;
+
+  // 1kb.
   static const _ramSizePalette = 0x400;
+
+  // 96kb.
   static const _ramSizeVideo = 0x20000;
+
+  // 1kb.
   static const _ramSizeObject = 0x400;
 
   static const _maskBios = 0x00003FFF;
@@ -29,13 +42,43 @@ class MemoryManager {
   final ByteBuffer _buffer;
 
   /// Memory location for the BIOS.
+  ///
+  /// Executable functions to enable faster development.
   final MemoryAccess bios;
 
   /// Memory location for internal use.
+  ///
+  /// This memory is embedded in the CPU and it's the fastest memory section.
+  /// The 32bit bus means that ARM instructions can be loaded at once. This is
+  /// available for code and data.
   final MemoryAccess internal;
 
   /// Memory location for work.
+  ///
+  /// Can be used for code and data.
   final MemoryAccess work;
+
+  /// Memory-mapped IO registers.
+  ///
+  /// Used to control graphics, sound, buttons and other features.
+  MemoryAccess get io => throw new UnimplementedError();
+
+  /// Memory for two palettes containing 256 entries of 15-bit colors each.
+  ///
+  /// The first is for backgrounds, the second for sprites.
+  MemoryAccess get palette => throw new UnimplementedError();
+
+  /// Video RAM.
+  ///
+  /// This is where the data used for backgrounds and sprites are stored. The
+  /// interpretation of this data depends on a number of things, including video
+  /// mode and background and sprite settings.
+  MemoryAccess get video => throw new UnimplementedError();
+
+  /// Object Attribute Memory.
+  ///
+  /// This is where sprites are controlled.
+  MemoryAccess get object => throw new UnimplementedError();
 
   /// Create a new empty [MemoryManager] unit for the emulator.
   ///
