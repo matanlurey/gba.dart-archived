@@ -1,62 +1,116 @@
 import 'package:arm7_tdmi/src/utils/bits.dart';
 
-/// Program status registers.
+/// Program status register.
 ///
 /// Maintains condition flags, interrupt disable bits, the current processor
 /// mode and other status and control information.
 ///
 /// The bit map for ARMv4 program status registers is as follows:
-///
+/// ```txt
 /// |31|30|29|28|27    25|24|23     8|7|6|5|4    0|
 /// |N |Z |C |V |Reserved|J |Reserved|I|F|T|M[4:0]|
-class ProgramStatusRegisters {
-  int _bits;
+/// ```
+class StatusRegister {
+  int _byte;
 
-  ProgramStatusRegisters.copyFrom(ProgramStatusRegisters other)
-      : _bits = other._bits;
+  StatusRegister([this._byte = 0]);
 
-  ProgramStatusRegisters([this._bits = 0]);
+  /// Byte that represents this register.
+  int get byte => _byte;
 
-  bool get areFIQInterruptsEnabled => isUnset(getBit(6, _bits));
+  /// Whether fast-interrupts is disabled.
+  bool get isFastInterruptsDisabled => isSet(getBit(6, _byte));
 
-  bool get areIRQInterruptsEnabled => isUnset(getBit(7, _bits));
-
-  int get negativeFlag => getBit(31, _bits);
-  set negativeFlag(int value) {
-    _bits = value == 1 ? setBit(31, _bits) : unsetBit(31, _bits);
+  /// Enable fast-interrupts.
+  void enableFastInterrupts() {
+    _byte = unsetBit(6, _byte);
   }
 
-  int get zeroFlag => getBit(30, _bits);
-  set zeroFlag(int value) {
-    _bits = value == 1 ? setBit(30, _bits) : unsetBit(30, _bits);
+  /// Disable fast-interrupts.
+  void disableFastInterrupts() {
+    _byte = setBit(6, _byte);
   }
 
-  int get carryFlag => getBit(29, _bits);
-  set carryFlag(int value) {
-    _bits = value == 1 ? setBit(29, _bits) : unsetBit(19, _bits);
+  /// Whether interrupts is disabled.
+  bool get isInterruptsDisabled => isSet(getBit(7, _byte));
+
+  /// Enable interrupts.
+  void enableInterrupts() {
+    _byte = unsetBit(7, _byte);
   }
 
-  int get overflowFlag => getBit(28, _bits);
-  set overflowFlag(int value) {
-    _bits = value == 1 ? setBit(28, _bits) : unsetBit(28, _bits);
+  /// Disable interrupts.
+  void disableInterrupts() {
+    _byte = setBit(7, _byte);
   }
 
-  void enableIRQInterrupts() {
-    _bits = unsetBit(7, _bits);
+  /// Whether to overflow.
+  bool get isOverflow => isSet(getBit(28, _byte));
+
+  /// Enable overflow.
+  void enableOverflow() {
+    _byte = setBit(28, _byte);
   }
 
-  void disableIRQInterrupts() {
-    _bits = setBit(7, _bits);
+  /// Disable overflow.
+  void disableOverflow() {
+    _byte = unsetBit(28, _byte);
   }
 
-  void enableFIQInterrupts() {
-    _bits = unsetBit(6, _bits);
+  bool get isBorrow => !isCarry;
+
+  /// Whether to carry.
+  bool get isCarry => isSet(getBit(29, _byte));
+
+  /// Enable carry (disabling borrow).
+  void enableCarry() {
+    _byte = setBit(29, _byte);
   }
 
-  void disableFIQInterrupts() {
-    _bits = setBit(6, _bits);
+  /// Disable carry (enabling borrow).
+  void disableCarry() {
+    _byte = unsetBit(29, _byte);
   }
 
-  /// Returns a copy of the register's internal state.
-  int dump() => _bits;
+  /// Whether to use zero; otherwise is non-zero.
+  bool get isZero => isSet(getBit(30, _byte));
+
+  /// Set zero.
+  void setZero() {
+    _byte = setBit(30, _byte);
+  }
+
+  /// Set non-zero.
+  void setNonZero() {
+    _byte = unsetBit(30, _byte);
+  }
+
+  /// Whether signed; otherwise unsigned.
+  bool get isSigned => isSet(getBit(31, _byte));
+
+  /// Whether unsigned.
+  bool get isUnsigned => isUnset(getBit(31, _byte));
+
+  /// Set signed.
+  void setSigned() {
+    _byte = setBit(31, _byte);
+  }
+
+  /// Set unsigned.
+  void setUnsigned() {
+    _byte = unsetBit(31, _byte);
+  }
+
+  @override
+  String toString() =>
+      '$StatusRegister {' +
+      {
+        'F': isFastInterruptsDisabled ? 1 : 0,
+        'I': isInterruptsDisabled ? 1 : 0,
+        'V': isOverflow ? 1 : 0,
+        'C': isCarry ? 1 : 0,
+        'Z': isZero ? 1 : 0,
+        'N': isSigned ? 1 : 0,
+      }.toString() +
+      '}';
 }
