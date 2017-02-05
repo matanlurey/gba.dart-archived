@@ -80,4 +80,19 @@ class Cpu {
     @required this.registersUnd,
     @required this.operatingMode,
   });
+
+  int get linkRegister => registers[14];
+  set linkRegister(int linkRegister) {
+    registers[14] = linkRegister;
+  }
+
+  int get programCounter => registers[15];
+  set programCounter(int programCounter) {
+    registers[15] = programCounter;
+  }
+
+  int get stackPointer => registers[13];
+  set stackPointer(int stackPointer) {
+    registers[13] = stackPointer;
+  }
 }
