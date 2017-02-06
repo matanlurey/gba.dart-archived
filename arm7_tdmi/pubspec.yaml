@@ -1,18 +1,18 @@
 name: arm7_tdmi
 description: >
-  An emulator for the ARM7-TDMI processor.
-version: 0.0.1
+  An emulator for the ARM7/TDMI processor.
+version: 0.0.1-dev
 authors:
   - Matan Lurey <matan@lurey.org>
   - Kendal Harland <kendaljharland@gmail.com>
-homepage: https://github.com/matanlurey/gba.dart
+homepage: https://github.com/matanlurey/gba.dart/blob/master/arm7_tdmi
 
 environment:
-  sdk: ">=1.8.0 <2.0.0"
+  sdk: '>=1.21.0-dev.2.0 <2.0.0'
 
 dependencies:
-  func:
-  quiver:
+  func: '^0.1.1'
+  quiver: '^0.24.0'
 
 dev_dependencies:
-  test:
+  test: '^0.12.18+1'

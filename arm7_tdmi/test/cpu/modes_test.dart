@@ -4,8 +4,7 @@ import 'package:test/test.dart';
 void main() {
   test('isPrivileged should return `true` only for user mode', () {
     expect(Arm7TdmiOperatingMode.usr.isPrivileged, isTrue);
-    Arm7TdmiOperatingMode
-        .values
+    Arm7TdmiOperatingMode.values
         .where((mode) => mode != Arm7TdmiOperatingMode.usr)
         .forEach((mode) {
       expect(
