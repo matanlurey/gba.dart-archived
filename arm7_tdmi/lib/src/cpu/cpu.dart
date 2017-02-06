@@ -1,98 +1,82 @@
-import 'dart:typed_data';
-
-import 'package:arm7_tdmi/src/cpu/operating_modes.dart';
-import 'package:arm7_tdmi/src/cpu/psr.dart';
-import 'package:meta/meta.dart';
-
-/// ARM7/TDMI processor.
-class Cpu {
-  /// Current program status registers.
-  final StatusRegister cpsr;
-
-  /// Stores the current value of a CPSR when an exception is taken.
-  ///
-  /// CPSR can be restored after handling the exception. Each exception handling
-  /// mode can access its own SPSR. User mode and system mode do not have an
-  /// SPSR because they are not exception handling modes.
-  ///
-  /// The execution state bits, including the endianness state and current
-  /// instruction set state can be accessed from the SPSR in any exception mode,
-  /// using the `MSR` and `MRS` instruction. You cannot access the SPSR using
-  /// `MSR` or `MRS` in User or System mode.
-  final StatusRegister spsr;
-
-  /// Normal `R0-R15` registers.
-  ///
-  /// - R0-R7 are known as the "low" registers.
-  /// - R8-R12 are known as the "high" registers.
-  /// - R13 is the stack pointer.
-  /// - R14 is the link pointer.
-  /// - R15 is the program counter.
-  final Uint32List registers;
-
-  /// Used to copy back the R8-R14 state for normal operations.
-  final Uint32List registersUsr;
-
-  /// Fast IRQ mode registers (R8-14).
-  final Uint32List registersFiq;
-
-  /// Supervisor mode registers (R13-R14).
-  final Uint32List registersSvc;
-
-  /// Abort mode registers (R13-R14).
-  final Uint32List registersAbt;
-
-  /// IRQ mode registers (R13-R14).
-  final Uint32List registersIrq;
-
-  /// Undefined mode registers (R13-R14).
-  final Uint32List registersUnd;
-
-  /// The processor's current operating mode.
-  ///
-  /// Defaults to [OperatingMode.user].
-  OperatingMode operatingMode;
-
-  factory Cpu() {
-    return new Cpu.from(
-      cpsr: new StatusRegister(),
-      spsr: new StatusRegister(),
-      registers: new Uint32List(16),
-      registersUsr: new Uint32List(7),
-      registersFiq: new Uint32List(7),
-      registersSvc: new Uint32List(2),
-      registersAbt: new Uint32List(2),
-      registersIrq: new Uint32List(2),
-      registersUnd: new Uint32List(2),
-      operatingMode: OperatingMode.user,
-    );
-  }
-
-  Cpu.from({
-    @required this.cpsr,
-    @required this.spsr,
-    @required this.registers,
-    @required this.registersUsr,
-    @required this.registersFiq,
-    @required this.registersSvc,
-    @required this.registersAbt,
-    @required this.registersIrq,
-    @required this.registersUnd,
-    @required this.operatingMode,
-  });
-
-  int get linkRegister => registers[14];
-  set linkRegister(int linkRegister) {
-    registers[14] = linkRegister;
-  }
-
-  int get programCounter => registers[15];
-  set programCounter(int programCounter) {
-    registers[15] = programCounter;
-  }
-
-  int get stackPointer => registers[13];
-  set stackPointer(int stackPointer) {
-    registers[13] = stackPointer;
-  }
+/// A 32-bit `RISC` (Reduced Instruction Set Computer) CPU emulator.
+///
+/// ## Fast execution
+///
+/// Depending on the CPU state, all opcodes are sized 32bit of 16bit (that's
+/// counting both the opcode bits and its parameter bits) providing fast
+/// decoding and execution. Additionally, pipe-lining allows - (a) one
+/// instruction to be executed while (b) the next instruction is decoded and (c)
+/// the next instruction is fetched from memory - all at the same time.
+///
+/// ## Data formats
+///
+/// The CPU manages to deal with 8bit, 16bit, and 32bit data that are called:
+///
+/// * 8bit - `Byte`
+/// * 16bit - `Half-word`
+/// * 32bit - `Word`
+///
+/// ## Two CPU states
+///
+/// As mentioned above, two CPU states exist:
+///
+/// * `ARM` state: Uses the full 32bit instruction set (32bit opcodes)
+/// * `THUMB` state: Uses a cut-down 16bit instruction set (16bit opcodes)
+///
+/// Regardless of opcode-width, both states use 32bit registers, allowing 32bit
+/// memory addressing as well as 32bit arithmetic/logical operations.
+///
+/// ### When to use `ARM` state
+///
+/// Two advantages to using `ARM`:
+///
+/// * Each single opcode provides more functionality, resulting in faster
+///   execution when using a 32bit bus memory system (such as opcodes stored in
+///   GBA work RAM).
+/// * All registers `R0-R15` can be accessed directly.
+///
+/// The downsides are:
+///
+/// * Not as fast when using 16bit memory system (but it still works though)
+/// * Program code occupies more memory space
+///
+/// ### When to use `THUMB` state
+///
+/// Two advantages to using `THUMB`:
+///
+/// * Faster execution up to approximately 160% when using a 16bit bus memory
+///   system (such as opcodes stored in GBA GamePak ROM).
+/// * Reduces code size, decreases memory overload down to approximately 65%.
+///
+/// The downsides are:
+///
+/// * Not as multi-functional opcodes as in `ARM` state, so it will be sometimes
+///   required to use more than one opcode to gain a similar result for a single
+///   opcode in the `ARM` state.
+/// * Most opcodes allow only registers `R0-R7` to be used directly.
+///
+/// ## Combining `ARM` and `THUMB` state
+///
+/// Switching between `ARM` and `THUMB` is done by a normal branch (`BX`)
+/// instruction which takes only a handful of cycles to execute (allowing for
+/// state changes as often as desired - with almost no overload).
+///
+/// Also as both `ARM` and `THUMB` use the same register set, it is possible to
+/// pass data between `ARM` and `THUMB` mode very easily.
+///
+/// The best memory and execution performance can be gained by combining both
+/// states: `THUMB` for normal program code, and `ARM` code for timing critical
+/// subroutines (such like interrupt handlers, or complicated algorithms).
+///
+/// **Note**: `ARM` and `THUMB` code cannot be executed simultaneously.
+///
+/// ## Automatic state changes
+///
+/// Beside for the above manual state switching by using `BX` instructions, th
+/// following situations involve automatic state changes:
+///
+/// * CPU switches to ARM state when executing an exception
+/// * User switches back to old state when leaving an exception
+abstract class Arm7Tdmi {
+  // TODO: Implement.
 }
