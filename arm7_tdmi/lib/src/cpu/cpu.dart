@@ -1,3 +1,6 @@
+import 'package:arm7_tdmi/arm7_tdmi.dart';
+import 'package:meta/meta.dart';
+
 /// A 32-bit `RISC` (Reduced Instruction Set Computer) CPU emulator.
 ///
 /// ## Fast execution
@@ -77,6 +80,8 @@
 ///
 /// * CPU switches to ARM state when executing an exception
 /// * User switches back to old state when leaving an exception
-abstract class Arm7Tdmi {
-  // TODO: Implement.
+class Arm7Tdmi {
+  final Arm7TdmiRegisters gprs;
+
+  Arm7Tdmi({@required this.gprs});
 }
