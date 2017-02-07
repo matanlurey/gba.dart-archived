@@ -150,6 +150,23 @@ class Integral implements Comparable<Integral> {
     return bitRange(bits, left, right);
   }
 
+  /// Returns an int containing only bits [0, [length]) from [bits].
+  int mask(int bits) => bits & ~(~0 << length);
+
+  /// Returns the true (unmasked) result of [a] + [b].
+  int add(int a, int b) {
+    int trueResult = mask(a) + mask(b);
+    if (isSigned) {
+      var isNegative = getBit(length - 1, trueResult) == 1;
+      // If signed and result is negative. Return -1 * reverse two's-compliment.
+      return isNegative ? -1 * ~(trueResult - 1) : trueResult;
+    }
+    return trueResult;
+  }
+
+  /// Returns the true (unmasked) result of [a] - [b].
+  int subtract(int a, int b) => isSigned ? add(a, (~b) + 1) : mask(a) - mask(b);
+
   @override
   int compareTo(Integral other) => length.compareTo(other.length);
 
