@@ -2,8 +2,10 @@
 
 Utilities for working with binary data in Dart.
 
+[![Pub](https://img.shields.io/pub/v/binary.svg)](https://pub.dartlang.org/packages/binary)
 [![Build Status](https://travis-ci.org/matanlurey/gba.dart.svg?branch=master)](https://travis-ci.org/matanlurey/gba.dart)
 [![Coverage Status](https://coveralls.io/repos/github/matanlurey/gba.dart/badge.svg?branch=master)](https://coveralls.io/github/matanlurey/gba.dart?branch=master)
+[![documentation](https://img.shields.io/badge/Documentation-dart_dev-blue.svg)](https://www.dartdocs.org/documentation/binary/latest)
 
 ## Usage
 
@@ -19,4 +21,6 @@ use cases. For example, it's used in an [`arm7_tdmi`][arm7_tdmi] emulator.
 
 [arm7_tdmi]: htps://pub.dartlang.org/packages/arm7_tdmi
 
-See the dartdocs for more about the API.
+See the [dartdocs][] for more about the API.
+
+[dartdocs]: https://www.dartdocs.org/documentation/binary/latest
