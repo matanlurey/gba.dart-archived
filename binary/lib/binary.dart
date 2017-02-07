@@ -4,7 +4,7 @@
 /// 32-bit strings as little-endian: the leftmost bit is 31, rightmost bit is 0.
 library binary;
 
-import 'dart:collection';
+import 'dart:collection' show IterableBase;
 
 import 'package:meta/meta.dart';
 
