@@ -1,0 +1,14 @@
+name: binary
+description: >
+  Utilities for working with binary data
+version: 0.0.1-dev
+authors:
+  - Matan Lurey <matan@lurey.org>
+  - Kendal Harland <kendaljharland@gmail.com>
+homepage: https://github.com/matanlurey/gba.dart/blob/master/binary
+
+environment:
+  sdk: ">=1.8.0 <2.0.0"
+
+dev_dependencies:
+  test: '^0.12.18+1'
