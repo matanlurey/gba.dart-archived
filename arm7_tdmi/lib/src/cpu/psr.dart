@@ -113,7 +113,7 @@ class Arm7TdmiPsr {
 
   /// Current operating mode.
   Arm7TdmiOperatingMode get operatingMode {
-    final m0m4 = int32.range(_bitModeEnd, _bitModeStart, _read());
+    final m0m4 = int32.range(_read(), _bitModeEnd, _bitModeStart);
     for (final mode in Arm7TdmiOperatingMode.values) {
       if (m0m4 == mode.bits) {
         return mode;
