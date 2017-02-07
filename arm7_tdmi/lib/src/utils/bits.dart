@@ -2,10 +2,10 @@
 ///
 /// Every function in this library treats 32-bit strings as little-endian:
 /// leftmost bit is 31, rightmost bit is 0.
-import 'dart:math';
+import 'package:binary/binary.dart';
 
-const maxSignedInt32 = 0x7FFFFFFF;
-const minSignedInt32 = -maxSignedInt32;
+final maxSignedInt32 = int32.max;
+final minSignedInt32 = int32.min;
 
 /// Whether [bit] is set to 1
 bool isSet(int bit) => bit == 1;
@@ -47,17 +47,16 @@ int getBitChunk(int leftBit, int size, int bits) {
 int getBitRange(int left, int right, int bits) =>
     getBitChunk(left, left - right + 1, bits);
 
-/// Returns 1 iff [op1] + [op2] + [op3] is greater than 2^16 - 1,
-/// else 0.
-int carryFrom(int op1, int op2, [int op3 = 0]) =>
-    op1 + op2 + op3 > pow(2, 16) - 1 ? 1 : 0;
+/// Returns 1 iff [op1] + [op2] + [op3] is greater than [int32.max], else 0.
+int carryFrom(int result) => result > int32.max ? 1 : 0;
 
 /// Returns 0 if [number] is non-negative, else 1.
 int sign(int number) => getBit(31, number);
 
 /// Returns 1 iff [op1] + [op2] + [op3] produces an integer overflow, else 0.
-int overflowFromAdd(int op1, int op2, [int op3 = 0]) =>
-    op1 + op2 + op3 > maxSignedInt32 ? 1 : 0;
+int overflowFromAdd(int op1, int op2, int result) =>
+    sign(op1) == sign(op2) && sign(result) != sign(op1) ? 1 : 0;
 
 /// Returns 1 iff [op1] - [op2] produces a 32-bit signed overflow, else 0.
-int overflowFromSub(int op1, int op2) => op1 - op2 < minSignedInt32 ? 1 : 0;
+int overflowFromSub(int op1, int op2, int result) =>
+    sign(op1) != sign(op2) && sign(result) != sign(op1) ? 1 : 0;
