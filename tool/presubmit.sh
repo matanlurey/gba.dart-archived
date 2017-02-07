@@ -21,13 +21,19 @@ set -e
 # Download the presubmit runner.
 pub global activate presubmit
 
-pushd gba
+pushd binary
 pub upgrade
 pub global run presubmit
 run_coveralls
 popd
 
 pushd arm7_tdmi
+pub upgrade
+pub global run presubmit
+run_coveralls
+popd
+
+pushd gba
 pub upgrade
 pub global run presubmit
 run_coveralls

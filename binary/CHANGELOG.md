@@ -1,1 +1,3 @@
-There is no guaranteed API stability at this time. Use at your own risk.
+## 0.1.0
+
+- Initial commit, feedback welcome!

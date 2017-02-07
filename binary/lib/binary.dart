@@ -5,6 +5,7 @@
 library binary;
 
 import 'dart:collection' show IterableBase;
+import 'dart:math' show pow;
 
 import 'package:meta/meta.dart';
 
@@ -63,23 +64,47 @@ int bitRange(int bits, int left, int right) {
 
 /// Base class for common integral data types.
 class Integral implements Comparable<Integral> {
+  /// All _signed_ data types.
+  static const List<Integral> signed = const <Integral>[
+    int4,
+    int8,
+    int16,
+    int32,
+    int64,
+    int128,
+  ];
+
+  /// All _unsigned_ data types.
+  static const List<Integral> unsigned = const <Integral>[
+    bit,
+    uint4,
+    uint8,
+    uint16,
+    uint32,
+    uint64,
+    uint128,
+  ];
+
   /// Number of bits in this data type.
   final int length;
 
-  /// Whether this data type supports negative numbers.
-  final bool signed;
+  /// Whether this data type supports negative integers.
+  final bool isSigned;
 
   /// Creates an integral data type of [length].
   @literal
-  const Integral._(this.length) : signed = true;
+  const Integral._(this.length) : isSigned = true;
 
   /// Creates an unsigned integral data type of [length].
   @literal
-  const Integral._unsigned(this.length) : signed = false;
+  const Integral._unsigned(this.length) : isSigned = false;
 
   RangeError _rangeError(int value, [String name]) {
     return new RangeError.range(value, min, max, name);
   }
+
+  /// Whether this data type is not signed (0 or positive integers only).
+  bool get isUnsigned => !isSigned;
 
   /// Returns the [n]th from [bits].
   ///
@@ -141,17 +166,17 @@ class Integral implements Comparable<Integral> {
   bool inRange(int value) => value >= min && value <= max;
 
   /// Minimum value representable by this data type.
-  int get min => signed ? (-(2 ^ (length - 1))) : 0;
+  int get min => isSigned ? (-pow(2, length - 1)) : 0;
 
   /// Maximum value representable by this data type.
-  int get max => signed ? (2 ^ (length - 1)) - 1 : ((2 ^ length) - 1);
+  int get max => isSigned ? pow(2, length - 1) - 1 : pow(2, length) - 1;
 
   /// Returns [bits] as a binary string representation.
   ///
   /// In _checked mode_, throws if [bits] not [inRange].
   String toBinary(int bits) {
     _assertInRange(bits);
-    return bits.toRadixString(length);
+    return bits.toRadixString(2);
   }
 
   /// Returns [bits] as a binary string representation, padded with `0`'s.
@@ -159,14 +184,24 @@ class Integral implements Comparable<Integral> {
   /// In _checked_ mode, throws if [bits] not [inRange].
   String toBinaryPadded(int bits) {
     _assertInRange(bits);
-    return bits.toRadixString(length).padLeft(length);
+    return bits.toRadixString(2).padLeft(length, '0');
   }
 
   /// Returns an iterable over [bits].
   Iterable<int> toIterable(int bits) => new _IterableBits(this, bits);
 
   @override
-  String toString() => '#$Integral {${signed ? '' : 'u'}$length}';
+  String toString() => '#$Integral {${isSigned ? '' : 'u'}$length}';
+}
+
+class _Bit extends Integral {
+  const _Bit() : super._unsigned(1);
+
+  @override
+  final int min = 0;
+
+  @override
+  final int max = 1;
 }
 
 class _BitIterator implements Iterator<int> {
@@ -181,7 +216,7 @@ class _BitIterator implements Iterator<int> {
   int get current => _type.get(_bits, _position);
 
   @override
-  bool moveNext() => _position++ < _type.length;
+  bool moveNext() => ++_position < _type.length;
 }
 
 class _IterableBits extends IterableBase<int> {
@@ -195,7 +230,7 @@ class _IterableBits extends IterableBase<int> {
 }
 
 /// A single (unsigned) bit.
-const Integral bit = const Integral._(1);
+const Integral bit = const _Bit();
 
 /// A (signed) 4-bit aggregation.
 ///
