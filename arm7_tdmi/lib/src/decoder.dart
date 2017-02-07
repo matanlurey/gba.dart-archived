@@ -53,6 +53,6 @@ abstract class Arm7TdmiInstructionFormat {
 /// ```
 /*
 class _DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
-  const _DataProcessingOrPsrTransfer(): super._(/*0x1000000*/);
+  const _DataProcessingOrPsrTransfer(): super._(/*0x2000000*/);
 }
 */

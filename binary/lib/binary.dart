@@ -7,7 +7,7 @@ library binary;
 import 'dart:collection' show IterableBase;
 import 'dart:math' show pow;
 
-import 'package:binary/binary.dart' as binary show isClear, isSet;
+import 'package:binary/binary.dart' as binary show fromBits, isClear, isSet;
 import 'package:meta/meta.dart';
 
 /// Returns the [n]th from [bits].
@@ -88,6 +88,30 @@ int bitChunk(int bits, int left, int size) {
 /// ```
 int bitRange(int bits, int left, int right) {
   return bitChunk(bits, left, left - right + 1);
+}
+
+/// Returns an int from [bits], in order to right-most to left-most.
+///
+/// **NOTE**: This is _not_ compatible with [Integral.toIterable].
+int fromBits(List<int> bits) {
+  assert(() {
+    if (bits == null) {
+      throw new ArgumentError.notNull('bits');
+    }
+    if (bits.isEmpty) {
+      throw new ArgumentError.value('Must be non-empty', 'bits');
+    }
+    return true;
+  });
+  var result = 0;
+  for (var n = 0; n < bits.length; n++) {
+    if (bits[n] == 1) {
+      result += pow(2, bits.length - n - 1);
+    } else {
+      assert(bits[n] == 0);
+    }
+  }
+  return result;
 }
 
 /// Base class for common integral data types.
@@ -182,6 +206,8 @@ class Integral implements Comparable<Integral> {
   /// Returns an int containing bits in [left] to [left] + [size] from [bits].
   ///
   /// The result is left-padded with 0's.
+  ///
+  /// In _checked mode_, throws if [bits], [left], or [size] out of range.
   int chunk(int bits, int left, int size) {
     _assertInRange(bits, 'bits');
     _assertInRange(left, 'left');
@@ -192,8 +218,19 @@ class Integral implements Comparable<Integral> {
   /// Returns an int containing bits in [left] to [right] inclusive from [bits].
   ///
   /// The result is left-padded with 0's.
+  ///
+  /// In _checked mode_, throws if [bits], [left], or [right] out of range.
   int range(int bits, int left, int right) {
     return bitRange(bits, left, right);
+  }
+
+  /// Returns an int from [bits], in order to left-most to right-most.
+  ///
+  /// In _checked mode_, throws if the result is out of range.
+  int fromBits(Iterable<int> bits) {
+    final result = binary.fromBits(bits);
+    _assertInRange(result);
+    return result;
   }
 
   @override
