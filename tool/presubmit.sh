@@ -6,6 +6,8 @@
 function run_coveralls {
   if [ "$COVERALLS_TOKEN" ] && [ "$TRAVIS_DART_VERSION" = "stable" ]; then
     dart tool/create_test_all.dart
+    # Unfortunately, dart_coveralls only supports this older format.
+    pub get --no-packages-dir
     pub global activate dart_coveralls
     pub global run dart_coveralls report \
       --retry 2 \
