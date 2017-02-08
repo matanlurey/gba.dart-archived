@@ -233,6 +233,33 @@ class Integral implements Comparable<Integral> {
     return result;
   }
 
+  /// Returns 0 if [number] is non-negative, else 1.
+  int sign(int number) {
+    assert(() {
+      if (!isSigned) {
+        throw new UnsupportedError('Cannot compute sign for unsinged value');
+      }
+    });
+    return getBit(number, length - 1);
+  }
+
+  /// Returns [1] if the [result] of an addition produced a carry bit, else 0.
+  ///
+  /// A carry bit is produced during a two's compliment addition if the unmasked
+  /// result is greater than [Integral.max].
+  int carryFrom(int result) => result > max ? 1 : 0;
+
+  /// Returns 1 if [op1] + [op2] produced a signed overflow in [result], else 0.
+  int overflowFromAdd(int op1, int op2, int result) =>
+      sign(op1) == sign(op2) && sign(result) != sign(op1) ? 1 : 0;
+
+  /// Returns 1 if [op1] - [op2] produced a signed overflow in [result], else 0.
+  int overflowFromSub(int op1, int op2, int result) =>
+      sign(op1) != sign(op2) && sign(result) != sign(op1) ? 1 : 0;
+
+  /// Returns an int containing only bits [0, [length]) from [bits].
+  int mask(int bits) => bits & ~(~0 << length);
+
   @override
   int compareTo(Integral other) => length.compareTo(other.length);
 
