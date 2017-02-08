@@ -8,6 +8,7 @@ const _FAILING = const [
   HalfWordDataTransferImmediateOffset,
   SingleDataTransfer,
   CoprocessorDataOperation,
+  CoprocessorRegisterTransfer,
 ];
 
 void main() {
