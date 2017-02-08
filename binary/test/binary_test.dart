@@ -4,6 +4,23 @@ import 'package:binary/binary.dart';
 import 'package:test/test.dart';
 
 void main() {
+  test('bitRange', () {
+    expect(bitRange(0x01020304, 31, 24), 0x01);
+  });
+
+  test('fromBits', () {
+    expect(
+      fromBits(const [
+        1,
+        0,
+        0,
+        0,
+        0,
+      ]),
+      0x10,
+    );
+  });
+
   group('bit', () {
     test('should have a length of 1 and be unsigned', () {
       expect(bit.isSigned, isFalse);

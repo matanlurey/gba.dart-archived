@@ -1,7 +1,7 @@
 name: binary
 description: >
   Utilities for working with binary data
-version: 0.1.0
+version: 0.0.1
 authors:
   - Matan Lurey <matan@lurey.org>
   - Kendal Harland <kendaljharland@gmail.com>

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:arm7_tdmi/arm7_tdmi.dart';
-import 'package:arm7_tdmi/src/utils/bits.dart';
+import 'package:binary/binary.dart';
 import 'package:func/func.dart';
 import 'package:meta/meta.dart';
 
@@ -113,7 +113,7 @@ class Arm7TdmiPsr {
 
   /// Current operating mode.
   Arm7TdmiOperatingMode get operatingMode {
-    final m0m4 = getBitRange(_bitModeEnd, _bitModeStart, _read());
+    final m0m4 = int32.range(_read(), _bitModeEnd, _bitModeStart);
     for (final mode in Arm7TdmiOperatingMode.values) {
       if (m0m4 == mode.bits) {
         return mode;
@@ -180,10 +180,10 @@ class Arm7TdmiPsr {
   }
 
   // Returns whether a bit is "set" at index (i.e. is `1` not `0`).
-  bool _isSet(int index) => isSet(_readBit(index));
+  bool _isSet(int index) => _readBit(index) == 1;
 
   // Returns a bit by index.
-  int _readBit(int index) => getBit(index, _read());
+  int _readBit(int index) => int32.get(_read(), index);
 
   // Toggles the value of a bit.
   void _toggleBit(int index, bool value) {
@@ -192,12 +192,12 @@ class Arm7TdmiPsr {
 
   // Sets a bit by index.
   void _setBit(int index) {
-    _write(setBit(index, _read()));
+    _write(int32.set(_read(), index));
   }
 
   // Un-sets a bit by index.
   void _unsetBit(int index) {
-    _write(unsetBit(index, _read()));
+    _write(int32.clear(_read(), index));
   }
 
   /// Returns the bits representing this PSR.

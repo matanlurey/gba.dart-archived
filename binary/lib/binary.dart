@@ -7,6 +7,7 @@ library binary;
 import 'dart:collection' show IterableBase;
 import 'dart:math' show pow;
 
+import 'package:binary/binary.dart' as binary show fromBits, isClear, isSet;
 import 'package:meta/meta.dart';
 
 /// Returns the [n]th from [bits].
@@ -27,6 +28,15 @@ int getBit(int bits, int n) => bits >> n & 1;
 /// ```
 int setBit(int bits, int n) => bits | (1 << n);
 
+/// Returns whether the [n]th bit in [bits] is set.
+///
+/// There is no range checking in this top-level function. To verify you are
+/// accessing a valid bit in _checked_ mode use [Integral.isSet], for example:
+/// ```
+/// int8.isSet(bits, n);
+/// ```
+bool isSet(int bits, int n) => getBit(bits, n) == 1;
+
 /// Returns an integer with the [n]th bit in [bits] cleared.
 ///
 /// There is no range checking in this top-level function. To verify you are
@@ -35,6 +45,15 @@ int setBit(int bits, int n) => bits | (1 << n);
 /// int8.clear(bits, n);
 /// ```
 int clearBit(int bits, int n) => bits & ~(1 << n);
+
+/// Returns whether the [n]th bit in [bits] is set.
+///
+/// There is no range checking in this top-level function. To verify you are
+/// accessing a valid bit in _checked_ mode use [Integral.isClear], for example:
+/// ```
+/// int8.isClear(bits, n);
+/// ```
+bool isClear(int bits, int n) => getBit(bits, n) == 0;
 
 /// Returns an int containing bits in [left] to [left] + [size] from [bits].
 ///
@@ -46,20 +65,53 @@ int clearBit(int bits, int n) => bits & ~(1 << n);
 /// int8.chunk(bits, left, size);
 /// ```
 int bitChunk(int bits, int left, int size) {
+  assert(() {
+    if (left < 0) {
+      throw new RangeError.value(left, 'left', 'Out of range. Must be > 0.');
+    }
+    if (size < 1) {
+      throw new RangeError.value(size, 'size', 'Out of range. Must be >= 1.');
+    }
+    return true;
+  });
   return (bits >> (left + 1 - size)) & ~(~0 << size);
 }
 
-/// Returns an int containing bits in [left] to [right] inclusive from [bits].
+/// Returns an int containing bits in [left] to [right] _inclusive_ from [bits].
 ///
 /// The result is left-padded with 0's.
 ///
 /// There is no range checking in this top-level function. To verify you are
 /// accessing a valid bit in _checked_ mode use [Integral.range], for example:
 /// ```
-/// int8.range(bits, left, size);
+/// int8.range(bits, left, right);
 /// ```
 int bitRange(int bits, int left, int right) {
   return bitChunk(bits, left, left - right + 1);
+}
+
+/// Returns an int from [bits], in order to right-most to left-most.
+///
+/// **NOTE**: This is _not_ compatible with [Integral.toIterable].
+int fromBits(List<int> bits) {
+  assert(() {
+    if (bits == null) {
+      throw new ArgumentError.notNull('bits');
+    }
+    if (bits.isEmpty) {
+      throw new ArgumentError.value('Must be non-empty', 'bits');
+    }
+    return true;
+  });
+  var result = 0;
+  for (var n = 0; n < bits.length; n++) {
+    if (bits[n] == 1) {
+      result += pow(2, bits.length - n - 1);
+    } else {
+      assert(bits[n] == 0);
+    }
+  }
+  return result;
 }
 
 /// Base class for common integral data types.
@@ -124,6 +176,15 @@ class Integral implements Comparable<Integral> {
     return setBit(bits, n);
   }
 
+  /// Returns if the [n]th from [bits] is set.
+  ///
+  /// In _checked mode_, throws if [bits] or [n] not [inRange].
+  bool isSet(int bits, int n) {
+    _assertInRange(bits, 'bits');
+    _assertInRange(n, 'n');
+    return binary.isSet(bits, n);
+  }
+
   /// Returns the result of clearing the [n]th from [bits].
   ///
   /// In _checked mode_, throws if [bits] or [n] not [inRange].
@@ -133,9 +194,20 @@ class Integral implements Comparable<Integral> {
     return clearBit(bits, n);
   }
 
+  /// Returns if the [n]th from [bits] is cleared.
+  ///
+  /// In _checked mode_, throws if [bits] or [n] not [inRange].
+  bool isClear(int bits, int n) {
+    _assertInRange(bits, 'bits');
+    _assertInRange(n, 'n');
+    return binary.isClear(bits, n);
+  }
+
   /// Returns an int containing bits in [left] to [left] + [size] from [bits].
   ///
   /// The result is left-padded with 0's.
+  ///
+  /// In _checked mode_, throws if [bits], [left], or [size] out of range.
   int chunk(int bits, int left, int size) {
     _assertInRange(bits, 'bits');
     _assertInRange(left, 'left');
@@ -146,8 +218,19 @@ class Integral implements Comparable<Integral> {
   /// Returns an int containing bits in [left] to [right] inclusive from [bits].
   ///
   /// The result is left-padded with 0's.
+  ///
+  /// In _checked mode_, throws if [bits], [left], or [right] out of range.
   int range(int bits, int left, int right) {
     return bitRange(bits, left, right);
+  }
+
+  /// Returns an int from [bits], in order to left-most to right-most.
+  ///
+  /// In _checked mode_, throws if the result is out of range.
+  int fromBits(Iterable<int> bits) {
+    final result = binary.fromBits(bits);
+    _assertInRange(result);
+    return result;
   }
 
   @override
