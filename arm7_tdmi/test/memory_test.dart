@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:arm7_tdmi/arm7_tdmi.dart';
