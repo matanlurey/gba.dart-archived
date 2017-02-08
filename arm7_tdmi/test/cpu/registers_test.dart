@@ -13,7 +13,7 @@ main() {
       for (var i = 0; i < 8; i++) {
         expect(
           registers.set(i, 1),
-          isNot(throwsA(anything)),
+          isNull,
           reason: '$mode should be able to write to register R$i',
         );
         expect(

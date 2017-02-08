@@ -1,7 +1,7 @@
 import 'package:gba/gba.dart';
 import 'package:test/test.dart';
 
-const throwsMemoryAccessError = const Throws(
+final throwsMemoryAccessError = throwsA(
   const isInstanceOf<MemoryAccessError>(),
 );
 
@@ -31,16 +31,16 @@ main() {
 
     test('should prevent reading from the BIOS when protection enabled', () {
       expect(
-        () => memory.bios.read8(0),
-        isNot(throwsMemoryAccessError),
+        memory.bios.read8(0),
+        isNotNull,
       );
       expect(
-        () => memory.bios.read16(0),
-        isNot(throwsMemoryAccessError),
+        memory.bios.read16(0),
+        isNotNull,
       );
       expect(
-        () => memory.bios.read32(0),
-        isNot(throwsMemoryAccessError),
+        memory.bios.read32(0),
+        isNotNull,
       );
       protectBios = true;
       expect(

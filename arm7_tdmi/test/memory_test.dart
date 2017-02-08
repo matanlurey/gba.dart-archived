@@ -4,87 +4,61 @@ import 'package:arm7_tdmi/arm7_tdmi.dart';
 import 'package:test/test.dart';
 
 main() {
-  group('$Memory', () {
-    Uint8List backing;
+  void readAndWrite(
+    List<int> createBacking(),
+    MemoryAccess createMemory(ByteBuffer buffer),
+  ) {
+    List<int> backing;
     MemoryAccess memory;
 
     setUp(() {
-      backing = new Uint8List(32);
-      memory = new Memory.view(backing.buffer);
+      backing = createBacking();
+      memory = createMemory((backing as TypedData).buffer);
     });
 
     test('should read 8 bits', () {
-      backing[0] = 2 ^ 8;
-      expect(memory.read8(0), 2 ^ 8);
+      backing[0] = 255;
+      expect(memory.read8(0), 255);
     });
 
     test('should read 16 bits', () {
-      backing[0] = 2 ^ 16;
-      expect(memory.read16(0), 2 ^ 16);
+      backing[0] = 255;
+      expect(memory.read16(0), 255);
     });
 
     test('should read 32 bits', () {
-      backing[0] = 2 ^ 32;
-      expect(memory.read32(0), 2 ^ 32);
+      backing[0] = 255;
+      expect(memory.read32(0), 255);
     });
 
     test('should write 8 bits', () {
-      memory.write8(0, 2 ^ 8);
-      expect(backing[0], 2 ^ 8);
+      memory.write8(0, 255);
+      expect(backing[0], 255);
     });
 
     test('should write 16 bits', () {
-      memory.write16(0, 2 ^ 16);
-      expect(backing[0], 2 ^ 16);
+      memory.write16(0, 255);
+      expect(backing[0], 255);
     });
 
     test('should write 32 bits', () {
-      memory.write32(0, 2 ^ 32);
-      expect(backing[0], 2 ^ 32);
+      memory.write32(0, 255);
+      expect(backing[0], 255);
     });
+  }
+
+  group('$Memory', () {
+    readAndWrite(
+      () => new Uint8List(32),
+      (ByteBuffer buffer) => new Memory.view(buffer),
+    );
   });
 
   group('$BitwiseAndMemoryMask', () {
-    Uint8List backing;
-    MemoryAccess memory;
-
-    setUp(() {
-      backing = new Uint8List(32);
-      memory = new BitwiseAndMemoryMask(
-        0x00003FFF,
-        new Memory.view(backing.buffer),
-      );
-    });
-
-    test('should read 8 bits', () {
-      backing[0] = 2 ^ 8;
-      expect(memory.read8(0), 2 ^ 8);
-    });
-
-    test('should read 16 bits', () {
-      backing[0] = 2 ^ 16;
-      expect(memory.read16(0), 2 ^ 16);
-    });
-
-    test('should read 32 bits', () {
-      backing[0] = 2 ^ 32;
-      expect(memory.read32(0), 2 ^ 32);
-    });
-
-    test('should write 8 bits', () {
-      memory.write8(0, 2 ^ 8);
-      expect(backing[0], 2 ^ 8);
-    });
-
-    test('should write 16 bits', () {
-      memory.write16(0, 2 ^ 16);
-      expect(backing[0], 2 ^ 16);
-    });
-
-    test('should write 32 bits', () {
-      memory.write32(0, 2 ^ 32);
-      expect(backing[0], 2 ^ 32);
-    });
+    readAndWrite(
+      () => new Uint8List(32),
+      (buffer) => new BitwiseAndMemoryMask(0x00003FFF, new Memory.view(buffer)),
+    );
   });
 
   group('$UnwriteableMemory', () {
