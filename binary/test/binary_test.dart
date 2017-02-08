@@ -53,6 +53,11 @@ void main() {
       expect(uint32.inRange(pow(2, 32)), isFalse);
     });
 
+    test('mask should correctly mask values', () {
+      int maxTimes16 = uint32.max << 4;
+      expect(uint32.mask(maxTimes16), 0xFFFFFFF0);
+    });
+
     test('should be able to iterate through bits', () {
       expect(
         uint32.toIterable(2),
@@ -61,6 +66,38 @@ void main() {
           1,
         ]..addAll(new Iterable.generate(30, (_) => 0)),
       );
+    });
+  });
+
+  group('int32', () {
+    test('mask should correctly mask values', () {
+      int maxTimes16 = int32.max << 4;
+      expect(int32.mask(maxTimes16), 0xFFFFFFF0);
+    });
+
+    test('carryFrom should return 1 iff the given operands produce a carry',
+        () {
+      expect(int32.hasCarryBit(int32.max + int32.max), true);
+      expect(int32.hasCarryBit(0 + int32.max), false);
+      expect(int32.hasCarryBit(1 + int32.max), true);
+      expect(int32.hasCarryBit(1 + 2), false);
+    });
+
+    test('overflowFromAdd should return 1 iff an addition produces an overflow',
+        () {
+      expect(int32.isAddOverflow(int32.max, 0, int32.max), false);
+      expect(int32.isAddOverflow(int32.max, 1, int32.max + 1), true);
+      expect(int32.isAddOverflow(-1, 2, -1 + 2), false);
+      expect(int32.isAddOverflow(0, 2 * int32.max, 0 + 2 * int32.max), false);
+    });
+
+    test(
+        'overflowFromSub should return 1 iff a subtraction produces an '
+        'overflow', () {
+      expect(int32.isSubOverflow(int32.min, 0, int32.min - 0), false);
+      expect(int32.isSubOverflow(int32.min, 1, int32.min - 1), true);
+      expect(int32.isSubOverflow(1, 2, 1 - 2), false);
+      expect(int32.isSubOverflow(0, 2 * int32.max, 0 - 2 * int32.max), false);
     });
   });
 
