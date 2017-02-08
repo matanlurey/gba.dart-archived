@@ -13,6 +13,10 @@ void adc(
   final op2 = int32.mask(shifterOperand + (gprs.cpsr.c ? 1 : 0));
   final trueResult = op1 + op2;
 
+  if (!condition.passes(gprs.cpsr)) {
+    return;
+  }
+
   if (updatesSpsr && rd == 15) {
     if (mode.canAccessSpsr) {
       // set cpsr to spsr.
@@ -24,8 +28,8 @@ void adc(
   } else {
     gprs.cpsr.n = int32.sign(trueResult) == 1;
     gprs.cpsr.z = gprs.get(rd) == 0;
-    gprs.cpsr.c = int32.carryFrom(trueResult) == 1;
-    gprs.cpsr.v = int32.overflowFromAdd(op1, op2, trueResult) == 1;
+    gprs.cpsr.c = int32.hasCarryBit(trueResult);
+    gprs.cpsr.v = int32.isAddOverflow(op1, op2, trueResult);
   }
 }
 
@@ -37,24 +41,25 @@ void add(
     int rn,
     int shifterOperand,
     bool updatesSpsr}) {
-  if (condition.passes(gprs.cpsr)) {
-    final op1 = int32.mask(gprs.get(rn));
-    final trueResult = op1 + int32.mask(shifterOperand);
+  if (!condition.passes(gprs.cpsr)) {
+    return;
+  }
+  final op1 = int32.mask(gprs.get(rn));
+  final trueResult = op1 + int32.mask(shifterOperand);
 
-    gprs.set(rd, trueResult);
-    if (updatesSpsr && rd == 15) {
-      if (mode.canAccessSpsr) {
-        // set cpsr to spsr.
-        throw new UnimplementedError();
-      } else {
-        // unpredictable
-        throw new UnimplementedError();
-      }
+  gprs.set(rd, trueResult);
+  if (updatesSpsr && rd == 15) {
+    if (mode.canAccessSpsr) {
+      // set cpsr to spsr.
+      throw new UnimplementedError();
     } else {
-      gprs.cpsr.n = int32.sign(trueResult) == 1;
-      gprs.cpsr.z = gprs.get(rd) == 0;
-      gprs.cpsr.c = int32.carryFrom(trueResult) == 1;
-      gprs.cpsr.v = int32.overflowFromAdd(op1, shifterOperand, trueResult) == 1;
+      // unpredictable
+      throw new UnimplementedError();
     }
+  } else {
+    gprs.cpsr.n = int32.sign(trueResult) == 1;
+    gprs.cpsr.z = gprs.get(rd) == 0;
+    gprs.cpsr.c = int32.hasCarryBit(trueResult);
+    gprs.cpsr.v = int32.isAddOverflow(op1, shifterOperand, trueResult);
   }
 }

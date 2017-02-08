@@ -248,15 +248,15 @@ class Integral implements Comparable<Integral> {
   ///
   /// A carry bit is produced during a two's compliment addition if the unmasked
   /// result is greater than [Integral.max].
-  int carryFrom(int result) => result > max ? 1 : 0;
+  bool hasCarryBit(int result) => result > max;
 
   /// Returns 1 if [op1] + [op2] produced a signed overflow in [result], else 0.
-  int overflowFromAdd(int op1, int op2, int result) =>
-      sign(op1) == sign(op2) && sign(result) != sign(op1) ? 1 : 0;
+  bool isAddOverflow(int op1, int op2, int result) =>
+      sign(op1) == sign(op2) && sign(result) != sign(op1);
 
   /// Returns 1 if [op1] - [op2] produced a signed overflow in [result], else 0.
-  int overflowFromSub(int op1, int op2, int result) =>
-      sign(op1) != sign(op2) && sign(result) != sign(op1) ? 1 : 0;
+  bool isSubOverflow(int op1, int op2, int result) =>
+      sign(op1) != sign(op2) && sign(result) != sign(op1);
 
   /// Returns an int containing only bits [0, [length]) from [bits].
   int mask(int bits) => bits & ~(~0 << length);
