@@ -264,16 +264,9 @@ class Integral implements Comparable<Integral> {
     return result;
   }
 
-  /// Returns 0 if [number] is non-negative, else 1.
-  int sign(int number) {
-    assert(() {
-      if (!isSigned) {
-        throw new UnsupportedError('Cannot compute sign for unsigned value');
-      }
-      return true;
-    });
-    return getBit(number, length - 1);
-  }
+  /// Returns true iff [number] is negative, else false.
+  bool isNegative(int number) =>
+      isSigned ? getBit(number, length - 1) == 1 : false;
 
   /// Returns [1] if the [result] of an addition produced a carry bit, else 0.
   ///
@@ -283,11 +276,13 @@ class Integral implements Comparable<Integral> {
 
   /// Returns 1 if [op1] + [op2] produced a signed overflow in [result], else 0.
   bool isAddOverflow(int op1, int op2, int result) =>
-      sign(op1) == sign(op2) && sign(result) != sign(op1);
+      isNegative(op1) == isNegative(op2) &&
+      isNegative(result) != isNegative(op1);
 
   /// Returns 1 if [op1] - [op2] produced a signed overflow in [result], else 0.
   bool isSubOverflow(int op1, int op2, int result) =>
-      sign(op1) != sign(op2) && sign(result) != sign(op1);
+      isNegative(op1) != isNegative(op2) &&
+      isNegative(result) != isNegative(op1);
 
   /// Returns an int containing only bits [0, [length]) from [bits].
   int mask(int bits) => bits & ~(~0 << length);
