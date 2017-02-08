@@ -237,7 +237,7 @@ class Integral implements Comparable<Integral> {
   int sign(int number) {
     assert(() {
       if (!isSigned) {
-        throw new UnsupportedError('Cannot compute sign for unsinged value');
+        throw new UnsupportedError('Cannot compute sign for unsigned value');
       }
       return true;
     });
