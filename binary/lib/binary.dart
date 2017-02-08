@@ -7,7 +7,7 @@ library binary;
 import 'dart:collection' show IterableBase;
 import 'dart:math' show pow;
 
-import 'package:binary/binary.dart' as binary show fromBits, isClear, isSet;
+import 'package:binary/binary.dart' as binary;
 import 'package:meta/meta.dart';
 
 /// Returns the [n]th from [bits].
@@ -112,6 +112,28 @@ int fromBits(List<int> bits) {
     }
   }
   return result;
+}
+
+/// Parses a binary number made entirely of 1's and 0's.
+int parseBits(String bits) {
+  const $0 = 48;
+  const $1 = 49;
+
+  return fromBits(bits.codeUnits.map((codeUnit) {
+    switch (codeUnit) {
+      case $0:
+        return 0;
+      case $1:
+        return 1;
+      default:
+        final char = new String.fromCharCode(codeUnit);
+        throw new FormatException(
+          'Invalid character: $char',
+          bits,
+          bits.indexOf(char),
+        );
+    }
+  }).toList());
 }
 
 /// Base class for common integral data types.
@@ -229,6 +251,15 @@ class Integral implements Comparable<Integral> {
   /// In _checked mode_, throws if the result is out of range.
   int fromBits(Iterable<int> bits) {
     final result = binary.fromBits(bits);
+    _assertInRange(result);
+    return result;
+  }
+
+  /// Parses a binary number made entirely of 1's and 0's.
+  ///
+  /// In _checked mode_, throws if the result is out of range.
+  int parseBits(String bits) {
+    final result = binary.parseBits(bits);
     _assertInRange(result);
     return result;
   }
