@@ -239,6 +239,7 @@ class Integral implements Comparable<Integral> {
       if (!isSigned) {
         throw new UnsupportedError('Cannot compute sign for unsinged value');
       }
+      return true;
     });
     return getBit(number, length - 1);
   }
