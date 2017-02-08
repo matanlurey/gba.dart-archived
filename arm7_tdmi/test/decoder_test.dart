@@ -57,7 +57,7 @@ void main() {
       CoprocessorDataOperation,
     ],
     const [
-      'CoprocessorRegisterTransfer',
+      'Cond*** 1 1 1 0 CPOpc L CRn**** Rd***** CP#**** CP*** 1 CRm****',
       CoprocessorRegisterTransfer,
     ],
   ].forEach((formats) {

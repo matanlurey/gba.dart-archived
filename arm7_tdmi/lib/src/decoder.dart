@@ -20,22 +20,24 @@ const _last4BitsMask = 0xF0000000;
 /// number that can be matched quickly against an instruction.
 abstract class Arm7TdmiInstructionFormat {
   /// All known ARM7/TDMI instruction formats.
-  static const List<Arm7TdmiInstructionFormat> values = const [
-    const DataProcessingOrPsrTransfer._(),
-    const Multiply._(),
-    const MultiplyLong._(),
-    const SingleDataSwap._(),
-    const BrandAndExchange._(),
-    const HalfWordDataTransferRegisterOffset._(),
-    const HalfWordDataTransferImmediateOffset._(),
-    const SingleDataTransfer._(),
-    const Undefined._(),
-    const BlockDataTransfer._(),
-    const Branch._(),
-    const CoprocessorDataTransfer._(),
-    const CoprocessorDataOperation._(),
-    const CoprocessorRegisterTransfer._(),
+  ///
+  /// **NOTE**: The ordering is significant when decoding a format.
+  static const List<Arm7TdmiInstructionFormat> formats = const [
     const SoftwareInterrupt._(),
+    const CoprocessorRegisterTransfer._(),
+    const CoprocessorDataOperation._(),
+    const CoprocessorDataTransfer._(),
+    const Branch._(),
+    const BlockDataTransfer._(),
+    const Undefined._(),
+    const SingleDataTransfer._(),
+    const DataProcessingOrPsrTransfer._(),
+    const HalfWordDataTransferImmediateOffset._(),
+    const HalfWordDataTransferRegisterOffset._(),
+    const BrandAndExchange._(),
+    const SingleDataSwap._(),
+    const MultiplyLong._(),
+    const Multiply._(),
   ];
 
   static int _computeFormat(int instruction) =>
@@ -47,7 +49,7 @@ abstract class Arm7TdmiInstructionFormat {
   /// Returns the format of [instruction].
   factory Arm7TdmiInstructionFormat.decoded(int instruction) {
     final computed = _computeFormat(instruction);
-    for (final format in values) {
+    for (final format in formats) {
       if (format.isFormat(computed)) {
         return format;
       }
@@ -81,7 +83,7 @@ abstract class Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 1 Opcode* S Rn***** Rd***** Operand2***************
 /// ```
 class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
-  const DataProcessingOrPsrTransfer._() :super._(0x200);
+  const DataProcessingOrPsrTransfer._() : super._(0x200);
 }
 
 /// Instruction format for Multiply.
@@ -93,7 +95,7 @@ class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 0 0 0 A S Rd***** Rn***** Rs***** 1 0 0 1 Rm*****
 /// ```
 class Multiply extends Arm7TdmiInstructionFormat {
-  const Multiply._() :super._(0x009);
+  const Multiply._() : super._(0x009);
 }
 
 /// Instruction format for Multiply Long.
@@ -105,7 +107,7 @@ class Multiply extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 0 1 U A S RdHi*** RdLo*** Rs***** 1 0 0 1 Rm*****
 /// ```
 class MultiplyLong extends Arm7TdmiInstructionFormat {
-  const MultiplyLong._() :super._(0x089);
+  const MultiplyLong._() : super._(0x089);
 }
 
 /// Instruction format for Single Data Swap.
@@ -117,7 +119,7 @@ class MultiplyLong extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 1 0 B 0 0 Rn***** Rd***** 0 0 0 0 1 0 0 1 Rn*****
 /// ```
 class SingleDataSwap extends Arm7TdmiInstructionFormat {
-  const SingleDataSwap._() :super._(0x109);
+  const SingleDataSwap._() : super._(0x109);
 }
 
 /// Instruction format for Branch and Exchange.
@@ -129,7 +131,7 @@ class SingleDataSwap extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 1 0 0 1 0 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 1 Rn*****
 /// ```
 class BrandAndExchange extends Arm7TdmiInstructionFormat {
-  const BrandAndExchange._() :super._(0x121);
+  const BrandAndExchange._() : super._(0x121);
 }
 
 /// Instruction format for Half-word Data Transfer: Register offset.
@@ -141,7 +143,7 @@ class BrandAndExchange extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 P U 0 W L Rn***** Rd***** 0 0 0 0 1 S H 1 Rm*****
 /// ```
 class HalfWordDataTransferRegisterOffset extends Arm7TdmiInstructionFormat {
-  const HalfWordDataTransferRegisterOffset._() :super._(0x00B);
+  const HalfWordDataTransferRegisterOffset._() : super._(0x00B);
 }
 
 /// Instruction format for Half-word Data Transfer: Immediate offset.
@@ -153,7 +155,7 @@ class HalfWordDataTransferRegisterOffset extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 P U 1 W L Rn***** Rd***** Offset* 1 S H 1 Offset*
 /// ```
 class HalfWordDataTransferImmediateOffset extends Arm7TdmiInstructionFormat {
-  const HalfWordDataTransferImmediateOffset._() :super._(0x04B);
+  const HalfWordDataTransferImmediateOffset._() : super._(0x04B);
 }
 
 /// Instruction format for Single Data Transfer.
@@ -165,7 +167,7 @@ class HalfWordDataTransferImmediateOffset extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 1 I P U B W L Rn***** Rd***** Offset*****************
 /// ```
 class SingleDataTransfer extends Arm7TdmiInstructionFormat {
-  const SingleDataTransfer._() :super._(0x600);
+  const SingleDataTransfer._() : super._(0x600);
 }
 
 /// Instruction format for Undefined.
@@ -177,7 +179,7 @@ class SingleDataTransfer extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 1 1 - - - - - - - - - - - - - - - - - - - - 1 - - - -
 /// ```
 class Undefined extends Arm7TdmiInstructionFormat {
-  const Undefined._() :super._(0x601);
+  const Undefined._() : super._(0x601);
 }
 
 /// Instruction format for Block Data Transfer.
@@ -189,7 +191,7 @@ class Undefined extends Arm7TdmiInstructionFormat {
 /// Cond*** 1 0 0 P U S W L Rn***** Register_List******************
 /// ```
 class BlockDataTransfer extends Arm7TdmiInstructionFormat {
-  const BlockDataTransfer._() :super._(0x800);
+  const BlockDataTransfer._() : super._(0x800);
 }
 
 /// Instruction format for Branch.
@@ -201,7 +203,7 @@ class BlockDataTransfer extends Arm7TdmiInstructionFormat {
 /// Cond*** 1 0 1 L Offset*****************************************
 /// ```
 class Branch extends Arm7TdmiInstructionFormat {
-  const Branch._() :super._(0xA00);
+  const Branch._() : super._(0xA00);
 }
 
 /// Instruction format for Coprocessor Data Transfer.
@@ -213,7 +215,7 @@ class Branch extends Arm7TdmiInstructionFormat {
 /// Cond*** 1 1 0 P U N W L Rn***** CRd**** CP#**** Offset*********
 /// ```
 class CoprocessorDataTransfer extends Arm7TdmiInstructionFormat {
-  const CoprocessorDataTransfer._() :super._(0xC00);
+  const CoprocessorDataTransfer._() : super._(0xC00);
 }
 
 /// Instruction format for Coprocessor Data Operation.
@@ -225,7 +227,7 @@ class CoprocessorDataTransfer extends Arm7TdmiInstructionFormat {
 /// Cond*** 1 1 1 0 CP_Opc* CRn**** CRd**** CP#**** CP*** 0 CRm****
 /// ```
 class CoprocessorDataOperation extends Arm7TdmiInstructionFormat {
-  const CoprocessorDataOperation._() :super._(0xE00);
+  const CoprocessorDataOperation._() : super._(0xE00);
 }
 
 /// Instruction format for Coprocessor Register Transfer.
@@ -237,7 +239,7 @@ class CoprocessorDataOperation extends Arm7TdmiInstructionFormat {
 /// Cond*** 1 1 1 0 CPOpc L CRn**** Rd***** CP#**** CP*** 1 CRm****
 /// ```
 class CoprocessorRegisterTransfer extends Arm7TdmiInstructionFormat {
-  const CoprocessorRegisterTransfer._() :super._(0xE00);
+  const CoprocessorRegisterTransfer._() : super._(0xE00);
 }
 
 /// Instruction format for Software Interrupt.
@@ -249,5 +251,5 @@ class CoprocessorRegisterTransfer extends Arm7TdmiInstructionFormat {
 /// Cond*** 1 1 1 1 (Ignored by processor*************************)
 /// ```
 class SoftwareInterrupt extends Arm7TdmiInstructionFormat {
-  const SoftwareInterrupt._() :super._(0xE01);
+  const SoftwareInterrupt._() : super._(0xE01);
 }
