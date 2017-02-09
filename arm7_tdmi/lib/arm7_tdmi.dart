@@ -21,6 +21,7 @@ export 'package:arm7_tdmi/src/decoder.dart'
         CoprocessorDataOperation,
         CoprocessorRegisterTransfer,
         SoftwareInterrupt;
+export 'package:arm7_tdmi/src/cpu/cpu.dart' show Arm7Tdmi;
 export 'package:arm7_tdmi/src/cpu/modes.dart' show Arm7TdmiOperatingMode;
 export 'package:arm7_tdmi/src/cpu/psr.dart' show Arm7TdmiPsr;
 export 'package:arm7_tdmi/src/cpu/registers.dart' show Arm7TdmiRegisters;

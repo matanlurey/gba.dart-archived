@@ -84,6 +84,15 @@ abstract class Arm7TdmiInstructionFormat {
 /// ```
 class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
   const DataProcessingOrPsrTransfer._() : super._(0x200);
+
+  /// Returns what register to write to.
+  int rd(int instruction) => 0;
+
+  /// Returns what register to read from.
+  int rn(int instruction) => 0;
+
+  /// Type of operand to use.
+  int operand(int instruction) => 0;
 }
 
 /// Instruction format for Multiply.
