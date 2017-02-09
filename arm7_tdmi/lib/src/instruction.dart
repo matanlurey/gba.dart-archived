@@ -30,6 +30,9 @@ abstract class Arm7TdmiInstruction<F extends Arm7TdmiInstructionFormat> {
 /// An `ADD` instruction.
 const Arm7TdmiInstruction<DataProcessingOrPsrTransfer> ADD = const _ADD();
 const Arm7TdmiInstruction<DataProcessingOrPsrTransfer> ADC = const _ADC();
+const Arm7TdmiInstruction<DataProcessingOrPsrTransfer> MOV = const _MOV();
+const Arm7TdmiInstruction<SoftwareInterrupt> SWI = const _SWI();
+const Arm7TdmiInstruction<DataProcessingOrPsrTransfer> LDR = const _LDR();
 
 class _ADD extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _ADD() : super._(opcode: 0, suffix: 'ADD');
@@ -85,5 +88,46 @@ class _ADC extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
       ..z = gprs.get(rd) == 0
       ..c = int32.hasCarryBit(result)
       ..v = int32.doesAddOverflow(op1, op2, result);
+  }
+}
+
+class _SWI extends Arm7TdmiInstruction<SoftwareInterrupt> {
+  const _SWI() : super._(opcode: null, suffix: 'SWI');
+
+  @override
+  void execute(
+    Arm7Tdmi cpu,
+    SoftwareInterrupt format,
+    int instruction,
+  ) {
+    // TODO: implement execute
+  }
+}
+
+class _MOV extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
+  const _MOV() : super._(opcode: null, suffix: 'MOV');
+
+  @override
+  void execute(
+    Arm7Tdmi cpu,
+    DataProcessingOrPsrTransfer format,
+    int instruction,
+  ) {
+    // TODO: implement execute
+  }
+}
+
+// TODO(kharland): Figure out the correct format for this instruction and fix
+// hello world test.
+class _LDR extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
+  const _LDR() : super._(opcode: null, suffix: 'LDR');
+
+  @override
+  void execute(
+    Arm7Tdmi cpu,
+    DataProcessingOrPsrTransfer format,
+    int instruction,
+  ) {
+    // TODO: implement execute
   }
 }
