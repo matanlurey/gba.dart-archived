@@ -85,19 +85,19 @@ void main() {
 
     test('overflowFromAdd should return 1 iff an addition produces an overflow',
         () {
-      expect(int32.isAddOverflow(int32.max, 0, int32.max), false);
-      expect(int32.isAddOverflow(int32.max, 1, int32.max + 1), true);
-      expect(int32.isAddOverflow(-1, 2, -1 + 2), false);
-      expect(int32.isAddOverflow(0, 2 * int32.max, 0 + 2 * int32.max), false);
+      expect(int32.doesAddOverflow(int32.max, 0, int32.max), false);
+      expect(int32.doesAddOverflow(int32.max, 1, int32.max + 1), true);
+      expect(int32.doesAddOverflow(-1, 2, -1 + 2), false);
+      expect(int32.doesAddOverflow(0, 2 * int32.max, 0 + 2 * int32.max), false);
     });
 
     test(
         'overflowFromSub should return 1 iff a subtraction produces an '
         'overflow', () {
-      expect(int32.isSubOverflow(int32.min, 0, int32.min - 0), false);
-      expect(int32.isSubOverflow(int32.min, 1, int32.min - 1), true);
-      expect(int32.isSubOverflow(1, 2, 1 - 2), false);
-      expect(int32.isSubOverflow(0, 2 * int32.max, 0 - 2 * int32.max), false);
+      expect(int32.doesSubOverflow(int32.min, 0, int32.min - 0), false);
+      expect(int32.doesSubOverflow(int32.min, 1, int32.min - 1), true);
+      expect(int32.doesSubOverflow(1, 2, 1 - 2), false);
+      expect(int32.doesSubOverflow(0, 2 * int32.max, 0 - 2 * int32.max), false);
     });
   });
 

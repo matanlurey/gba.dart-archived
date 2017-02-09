@@ -275,12 +275,12 @@ class Integral implements Comparable<Integral> {
   bool hasCarryBit(int result) => result > max;
 
   /// Returns true if [op1] + [op2] produced a signed overflow in [result].
-  bool isAddOverflow(int op1, int op2, int result) =>
+  bool doesAddOverflow(int op1, int op2, int result) =>
       isNegative(op1) == isNegative(op2) &&
       isNegative(result) != isNegative(op1);
 
   /// Returns true if [op1] - [op2] produced a signed overflow in [result].
-  bool isSubOverflow(int op1, int op2, int result) =>
+  bool doesSubOverflow(int op1, int op2, int result) =>
       isNegative(op1) != isNegative(op2) &&
       isNegative(result) != isNegative(op1);
 
