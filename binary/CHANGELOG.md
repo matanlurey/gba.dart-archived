@@ -1,8 +1,12 @@
+## 0.0.3
+
+- Added `isZero`.
+
 ## 0.0.2
 
 - Added `isNegative`, `hasCarryBit`, `doesAddOverflow`, `doesSubOverflow`,
-  `mask`
-- Added `parseBits`
+  `mask`.
+- Added `parseBits`.
 
 ## 0.0.1
 
