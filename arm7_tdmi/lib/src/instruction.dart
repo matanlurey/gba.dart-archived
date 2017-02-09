@@ -29,6 +29,7 @@ abstract class Arm7TdmiInstruction<F extends Arm7TdmiInstructionFormat> {
 
 /// An `ADD` instruction.
 const Arm7TdmiInstruction<DataProcessingOrPsrTransfer> ADD = const _ADD();
+const Arm7TdmiInstruction<DataProcessingOrPsrTransfer> ADC = const _ADC();
 
 class _ADD extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _ADD() : super._(opcode: 0, suffix: 'ADD');
