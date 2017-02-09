@@ -39,6 +39,13 @@ import 'package:arm7_tdmi/arm7_tdmi.dart';
 /// -----------------------------------------------------------------------
 /// ```
 class Arm7TdmiRegisters {
+  // Stack pointer index.
+  static const SP = 13;
+  // Link register index.
+  static const LR = 14;
+  // Program counter index.
+  static const PC = 15;
+
   static const _totalRegisters = 37;
 
   // All memory locations, including those which are mode dependent or for CPSR.
@@ -134,21 +141,21 @@ class Arm7TdmiRegisters {
   }
 
   /// Stack pointer.
-  int get sp => _registers[13];
+  int get sp => _registers[SP];
   set sp(int sp) {
-    _registers[13] = sp;
+    _registers[SP] = sp;
   }
 
   /// Link register.
-  int get lr => _registers[14];
+  int get lr => _registers[LR];
   set lr(int lr) {
-    _registers[14] = lr;
+    _registers[LR] = lr;
   }
 
   /// Program counter.
-  int get pc => _registers[15];
+  int get pc => _registers[PC];
   set pc(int pc) {
-    _registers[15] = pc;
+    _registers[PC] = pc;
   }
 
   /// Current program status register bits.
