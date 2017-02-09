@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 // TODO(kharland): Implement swi to call printf with data stored in register 1
 // of length stored in register 2.
 void main() {
-  test('Should print hello world', () {
+  test('Should pass hello world test', () {
     final helloWorld = 0x00007734;
     final cpu = new Arm7Tdmi(gprs: new Arm7TdmiRegisters());
 
