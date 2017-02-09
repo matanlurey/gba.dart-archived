@@ -30,7 +30,7 @@ abstract class Arm7TdmiInstruction<F extends Arm7TdmiInstructionFormat> {
 const Arm7TdmiInstruction<DataProcessingOrPsrTransfer> ADD = const _ADD();
 const Arm7TdmiInstruction<DataProcessingOrPsrTransfer> MOV = const _MOV();
 const Arm7TdmiInstruction<SoftwareInterrupt> SWI = const _SWI();
-const Arm7TdmiInstruction<SoftwareInterrupt> LDR = const _LDR();
+const Arm7TdmiInstruction<DataProcessingOrPsrTransfer> LDR = const _LDR();
 
 class _ADD extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _ADD() : super._(opcode: 0, suffix: 'ADD');
@@ -90,7 +90,7 @@ class _MOV extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 // TODO(kharland): Figure out the correct format for this instruction and fix
 // hello world test.
 class _LDR extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
-  const _LDR() : super._(opcode: null, suffix: 'MOV');
+  const _LDR() : super._(opcode: null, suffix: 'LDR');
 
   @override
   void execute(
