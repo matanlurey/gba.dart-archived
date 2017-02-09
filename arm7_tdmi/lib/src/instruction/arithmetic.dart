@@ -17,7 +17,7 @@ void adc(
     return;
   }
 
-  if (updatesSpsr && rd == 15) {
+  if (updatesSpsr && rd == Arm7TdmiRegisters.PC) {
     if (mode.canAccessSpsr) {
       // set cpsr to spsr.
       throw new UnimplementedError();
@@ -48,7 +48,7 @@ void add(
   final trueResult = op1 + int32.mask(shifterOperand);
 
   gprs.set(rd, trueResult);
-  if (updatesSpsr && rd == 15) {
+  if (updatesSpsr && rd == Arm7TdmiRegisters.PC) {
     if (mode.canAccessSpsr) {
       // set cpsr to spsr.
       throw new UnimplementedError();
