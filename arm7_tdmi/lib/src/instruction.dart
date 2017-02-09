@@ -61,7 +61,7 @@ class _ADD extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 }
 
 class _ADDS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
-  const _ADDS() : super._(opcode: 0, suffix: 'ADD');
+  const _ADDS() : super._(opcode: 0, suffix: 'ADDS');
 
   @override
   void execute(
@@ -115,7 +115,7 @@ class _ADC extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 }
 
 class _ADCS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
-  const _ADCS() : super._(opcode: 5, suffix: 'ADC');
+  const _ADCS() : super._(opcode: 5, suffix: 'ADCS');
 
   @override
   void execute(
