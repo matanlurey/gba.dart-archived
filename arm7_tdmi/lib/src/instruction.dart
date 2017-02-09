@@ -65,6 +65,13 @@ class _ADD extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 
 class _ADC extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _ADC() : super._(opcode: 5, suffix: 'ADC');
+
+  @override
+  void execute(
+    Arm7Tdmi cpu,
+    DataProcessingOrPsrTransfer format,
+    int instruction,
+  ) {
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
     final rn = format.rn(instruction);
