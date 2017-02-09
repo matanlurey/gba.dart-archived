@@ -136,6 +136,9 @@ int parseBits(String bits) {
   }).toList());
 }
 
+/// Returns true iff [bits] == 0.
+bool isZero(int bits) => bits == 0;
+
 /// Base class for common integral data types.
 class Integral implements Comparable<Integral> {
   /// All _signed_ data types.
