@@ -1,3 +1,9 @@
+## 0.0.2
+
+- Added `isNegative`, `hasCarryBit`, `doesAddOverflow`, `doesSubOverflow`,
+  `mask`
+- Added `parseBits`
+
 ## 0.0.1
 
 - Add top-level `isSet` and `isClear`, `Integral#isSet`, `Integral#isClear`.
