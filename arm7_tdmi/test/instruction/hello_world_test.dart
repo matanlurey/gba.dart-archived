@@ -22,11 +22,11 @@ void main() {
       // Loads the string to print into register 1
       const [LDR, 0x02000000 /* ldr r1 helloWorld */],
       // Software interrupt w/ r0: 1 and r7: 4 == call printf
-      const [SWI, 0x0E000100 /* swi 0 */],
+      const [SWI, 0x0E000010 /* swi 0 */],
       // Loads the literal 1 into register 7
       const [MOV, 0x02000000 /* mov r7, #1 */],
       // Software interrupt w/ r0: 1 and r7: 7 == exit
-      const [SWI, 0x0E000100 /* swi 0 */],
+      const [SWI, 0x0E000010 /* swi 0 */],
     ];
 
     program.forEach((instructionParts) {
