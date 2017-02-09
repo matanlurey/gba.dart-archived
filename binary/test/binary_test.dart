@@ -75,7 +75,7 @@ void main() {
       expect(int32.mask(maxTimes16), 0xFFFFFFF0);
     });
 
-    test('carryFrom should return 1 iff the given operands produce a carry',
+    test('carryFrom should return true iff the given operands produce a carry',
         () {
       expect(int32.hasCarryBit(int32.max + int32.max), true);
       expect(int32.hasCarryBit(0 + int32.max), false);
@@ -83,8 +83,9 @@ void main() {
       expect(int32.hasCarryBit(1 + 2), false);
     });
 
-    test('overflowFromAdd should return 1 iff an addition produces an overflow',
-        () {
+    test(
+        'overflowFromAdd should return true iff an addition produces an '
+        'overflow', () {
       expect(int32.doesAddOverflow(int32.max, 0, int32.max), false);
       expect(int32.doesAddOverflow(int32.max, 1, int32.max + 1), true);
       expect(int32.doesAddOverflow(-1, 2, -1 + 2), false);
@@ -92,7 +93,7 @@ void main() {
     });
 
     test(
-        'overflowFromSub should return 1 iff a subtraction produces an '
+        'overflowFromSub should return true iff a subtraction produces an '
         'overflow', () {
       expect(int32.doesSubOverflow(int32.min, 0, int32.min - 0), false);
       expect(int32.doesSubOverflow(int32.min, 1, int32.min - 1), true);
