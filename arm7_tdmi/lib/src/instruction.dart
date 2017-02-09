@@ -159,7 +159,7 @@ class _SWI extends Arm7TdmiInstruction<SoftwareInterrupt> {
 }
 
 class _MOV extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
-  const _MOV() : super._(opcode: null, suffix: 'MOV');
+  const _MOV() : super._(opcode: 13, suffix: 'MOV');
 
   @override
   void execute(
@@ -172,7 +172,7 @@ class _MOV extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 }
 
 class _MOVS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
-  const _MOVS() : super._(opcode: 5, suffix: 'MOVS');
+  const _MOVS() : super._(opcode: 13, suffix: 'MOVS');
 
   @override
   void execute(
