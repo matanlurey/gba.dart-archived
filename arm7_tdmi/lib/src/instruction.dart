@@ -1,4 +1,5 @@
 import 'package:arm7_tdmi/arm7_tdmi.dart';
+import 'package:binary/binary.dart';
 import 'package:meta/meta.dart';
 
 /// An ARM7/TDMI instruction definition.
@@ -42,21 +43,46 @@ class _ADD extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     final rd = format.rd(instruction);
     final rn = format.rn(instruction);
 
-    final op1 = _mask(gprs.get(rn), 32);
-    final op2 = _mask(format.operand(instruction), 32);
+    final op1 = int32.mask(gprs.get(rn));
+    final op2 = int32.mask(format.operand(instruction));
     final result = op1 + op2;
 
     gprs.set(rd, result);
 
-    // TODO: If updatesSpsr.
+    // TODO: If updatesSpsr && rd == program counter.
 
     gprs.cpsr
-      ..n = false /*int32.sign(result)*/
+      ..n = int32.isNegative(result)
       ..z = gprs.get(rd) == 0
-      ..c = false /*int32.hasCarryBit(result)*/
-      ..v = false /*int32.isAddOverflow(op1, op2, result)*/;
+      ..c = int32.hasCarryBit(result)
+      ..v = int32.doesAddOverflow(op1, op2, result);
   }
 }
 
-// TODO: Remove this once #35 lands.
-int _mask(int bits, int length) => bits & ~(~0 << length);
+class _ADC extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
+  const _ADC() : super._(opcode: 5, suffix: 'ADC');
+
+  @override
+  void execute(
+    Arm7Tdmi cpu,
+    DataProcessingOrPsrTransfer format,
+    int instruction,
+  ) {
+    final gprs = cpu.gprs;
+    final rd = format.rd(instruction);
+    final rn = format.rn(instruction);
+    final op1 = int32.mask(gprs.get(rn));
+    final op2 = int32.mask(format.operand(instruction)) + (gprs.cpsr.c ? 1 : 0);
+    final result = op1 + op2;
+
+    gprs.set(rd, result);
+
+    // TODO: If updatesSpsr && rd == program counter.
+
+    gprs.cpsr
+      ..n = int32.isNegative(result)
+      ..z = gprs.get(rd) == 0
+      ..c = int32.hasCarryBit(result)
+      ..v = int32.doesAddOverflow(op1, op2, result);
+  }
+}
