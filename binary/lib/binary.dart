@@ -264,6 +264,29 @@ class Integral implements Comparable<Integral> {
     return result;
   }
 
+  /// Returns true iff [number] is negative, else false.
+  bool isNegative(int number) =>
+      isSigned ? getBit(number, length - 1) == 1 : false;
+
+  /// Returns true if the [result] of an addition produced a carry bit.
+  ///
+  /// A carry bit is produced during a two's compliment addition if the unmasked
+  /// result is greater than [Integral.max].
+  bool hasCarryBit(int result) => result > max;
+
+  /// Returns true if [op1] + [op2] produced a signed overflow in [result].
+  bool doesAddOverflow(int op1, int op2, int result) =>
+      isNegative(op1) == isNegative(op2) &&
+      isNegative(result) != isNegative(op1);
+
+  /// Returns true if [op1] - [op2] produced a signed overflow in [result].
+  bool doesSubOverflow(int op1, int op2, int result) =>
+      isNegative(op1) != isNegative(op2) &&
+      isNegative(result) != isNegative(op1);
+
+  /// Returns an int containing only bits [0, [length]) from [bits].
+  int mask(int bits) => bits & ~(~0 << length);
+
   @override
   int compareTo(Integral other) => length.compareTo(other.length);
 
