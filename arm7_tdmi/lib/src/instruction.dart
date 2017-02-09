@@ -100,7 +100,6 @@ class _SWI extends Arm7TdmiInstruction<SoftwareInterrupt> {
 class _MOV extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _MOV() : super._(opcode: null, suffix: 'MOV');
 
-
   @override
   void execute(
     Arm7Tdmi cpu,
