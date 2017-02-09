@@ -94,10 +94,10 @@ class _LDR extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 
   @override
   void execute(
-      Arm7Tdmi cpu,
-      DataProcessingOrPsrTransfer format,
-      int instruction,
-      ) {
+    Arm7Tdmi cpu,
+    DataProcessingOrPsrTransfer format,
+    int instruction,
+  ) {
     // TODO: implement execute
   }
 }
