@@ -26,10 +26,10 @@ void adc(
       throw new UnimplementedError();
     }
   } else {
-    gprs.cpsr.n = int32.sign(trueResult) == 1;
+    gprs.cpsr.n = int32.isNegative(trueResult);
     gprs.cpsr.z = gprs.get(rd) == 0;
     gprs.cpsr.c = int32.hasCarryBit(trueResult);
-    gprs.cpsr.v = int32.isAddOverflow(op1, op2, trueResult);
+    gprs.cpsr.v = int32.doesAddOverflow(op1, op2, trueResult);
   }
 }
 
@@ -57,9 +57,9 @@ void add(
       throw new UnimplementedError();
     }
   } else {
-    gprs.cpsr.n = int32.sign(trueResult) == 1;
+    gprs.cpsr.n = int32.isNegative(trueResult);
     gprs.cpsr.z = gprs.get(rd) == 0;
     gprs.cpsr.c = int32.hasCarryBit(trueResult);
-    gprs.cpsr.v = int32.isAddOverflow(op1, shifterOperand, trueResult);
+    gprs.cpsr.v = int32.doesAddOverflow(op1, shifterOperand, trueResult);
   }
 }
