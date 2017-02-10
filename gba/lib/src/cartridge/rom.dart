@@ -7,4 +7,3 @@ abstract class Rom {
   /// The returned bytes are left-padded with zeroes.
   List<int> read(MemoryLocation memoryLocation);
 }
-
