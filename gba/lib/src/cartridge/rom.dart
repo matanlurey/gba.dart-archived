@@ -1,8 +1,10 @@
+import 'package:gba/src/memory_location.dart';
+
 /// An interface for read-only memory.
 abstract class Rom {
-  /// Returns [numBytes] bytes starting at [address].
+  /// Returns the bytes at the give [memoryLocation].
   ///
   /// The returned bytes are left-padded with zeroes.
-  List<int> read(int address, int numBytes);
+  List<int> read(MemoryLocation memoryLocation);
 }
 
