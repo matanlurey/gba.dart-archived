@@ -167,7 +167,13 @@ class _MOV extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
-    // TODO: implement execute
+    final gprs = cpu.gprs;
+    final rd = format.rd(instruction);
+    final shifterOperand = format.operand(instruction);
+
+    // TODO: if condition passes...
+
+    gprs.set(rd, shifterOperand);
   }
 }
 
