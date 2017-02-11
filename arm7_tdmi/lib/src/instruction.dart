@@ -85,7 +85,7 @@ class _ADDS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 
     gprs.cpsr
       ..n = int32.isNegative(result)
-      ..z = gprs.get(rd) == 0
+      ..z = isZero(gprs.get(rd))
       ..c = int32.hasCarryBit(result)
       ..v = int32.doesAddOverflow(op1, op2, result);
   }
@@ -139,7 +139,7 @@ class _ADCS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 
     gprs.cpsr
       ..n = int32.isNegative(result)
-      ..z = gprs.get(rd) == 0
+      ..z = isZero(gprs.get(rd))
       ..c = int32.hasCarryBit(result)
       ..v = int32.doesAddOverflow(op1, op2, result);
   }
