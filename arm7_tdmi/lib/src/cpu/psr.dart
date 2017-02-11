@@ -183,7 +183,7 @@ class Arm7TdmiPsr {
   bool _isSet(int index) => _readBit(index) == 1;
 
   // Returns a bit by index.
-  int _readBit(int index) => int32.get(_read(), index);
+  int _readBit(int index) => uint32.get(_read(), index);
 
   // Toggles the value of a bit.
   void _toggleBit(int index, bool value) {
@@ -192,12 +192,12 @@ class Arm7TdmiPsr {
 
   // Sets a bit by index.
   void _setBit(int index) {
-    _write(int32.set(_read(), index));
+    _write(uint32.set(_read(), index));
   }
 
   // Un-sets a bit by index.
   void _unsetBit(int index) {
-    _write(int32.clear(_read(), index));
+    _write(uint32.clear(_read(), index));
   }
 
   /// Returns the bits representing this PSR.
