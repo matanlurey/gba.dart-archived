@@ -1,7 +1,23 @@
-/// Utilities for common binary and bit operations.
+/// Utilities for working with binary data and bit manipulation in Dart.
+///
+/// It's recommended whenever possible to use the [Integral] data types:
+/// * [bit]
+/// * [int4]
+/// * [int8]
+/// * [int16]
+/// * [int32]
+/// * [int64]
+/// * [int128]
+/// * [uint4]
+/// * [uint8]
+/// * [uint16]
+/// * [uint32]
+/// * [uint64]
+/// * [uint128]
 ///
 /// **NOTE**: Every function in this library (unless labeled otherwise) treats
-/// 32-bit strings as little-endian: the leftmost bit is 31, rightmost bit is 0.
+/// bits as little-endian; that is in 32 bits the leftmost bit is 31 and the
+/// rightmost bit is 0.
 library binary;
 
 import 'dart:collection' show IterableBase;
@@ -14,7 +30,7 @@ import 'package:meta/meta.dart';
 ///
 /// There is no range checking in this top-level function. To verify you are
 /// accessing a valid bit in _checked_ mode use [Integral.get], for example:
-/// ```
+/// ```dart
 /// int8.get(bits, n);
 /// ```
 int getBit(int bits, int n) => bits >> n & 1;
@@ -23,7 +39,7 @@ int getBit(int bits, int n) => bits >> n & 1;
 ///
 /// There is no range checking in this top-level function. To verify you are
 /// accessing a valid bit in _checked_ mode use [Integral.set], for example:
-/// ```
+/// ```dart
 /// int8.set(bits, n);
 /// ```
 int setBit(int bits, int n) => bits | (1 << n);
@@ -32,7 +48,7 @@ int setBit(int bits, int n) => bits | (1 << n);
 ///
 /// There is no range checking in this top-level function. To verify you are
 /// accessing a valid bit in _checked_ mode use [Integral.isSet], for example:
-/// ```
+/// ```dart
 /// int8.isSet(bits, n);
 /// ```
 bool isSet(int bits, int n) => getBit(bits, n) == 1;
@@ -41,7 +57,7 @@ bool isSet(int bits, int n) => getBit(bits, n) == 1;
 ///
 /// There is no range checking in this top-level function. To verify you are
 /// accessing a valid bit in _checked_ mode use [Integral.clear], for example:
-/// ```
+/// ```dart
 /// int8.clear(bits, n);
 /// ```
 int clearBit(int bits, int n) => bits & ~(1 << n);
@@ -50,7 +66,7 @@ int clearBit(int bits, int n) => bits & ~(1 << n);
 ///
 /// There is no range checking in this top-level function. To verify you are
 /// accessing a valid bit in _checked_ mode use [Integral.isClear], for example:
-/// ```
+/// ```dart
 /// int8.isClear(bits, n);
 /// ```
 bool isClear(int bits, int n) => getBit(bits, n) == 0;
@@ -61,7 +77,7 @@ bool isClear(int bits, int n) => getBit(bits, n) == 0;
 ///
 /// There is no range checking in this top-level function. To verify you are
 /// accessing a valid bit in _checked_ mode use [Integral.chunk], for example:
-/// ```
+/// ```dart
 /// int8.chunk(bits, left, size);
 /// ```
 int bitChunk(int bits, int left, int size) {
@@ -83,7 +99,7 @@ int bitChunk(int bits, int left, int size) {
 ///
 /// There is no range checking in this top-level function. To verify you are
 /// accessing a valid bit in _checked_ mode use [Integral.range], for example:
-/// ```
+/// ```dart
 /// int8.range(bits, left, right);
 /// ```
 int bitRange(int bits, int left, int right) {
@@ -91,6 +107,10 @@ int bitRange(int bits, int left, int right) {
 }
 
 /// Returns an int from [bits], in order to right-most to left-most.
+///
+/// ```dart
+/// fromBits([1, 0, 0, 1]) // Returns `9`
+/// ```
 ///
 /// **NOTE**: This is _not_ compatible with [Integral.toIterable].
 int fromBits(List<int> bits) {
@@ -115,6 +135,10 @@ int fromBits(List<int> bits) {
 }
 
 /// Parses a binary number made entirely of 1's and 0's.
+///
+/// ```dart
+/// parseBits('1001') // Returns `9`
+/// ```
 int parseBits(String bits) {
   const $0 = 48;
   const $1 = 49;
@@ -136,7 +160,7 @@ int parseBits(String bits) {
   }).toList());
 }
 
-/// Returns true iff [bits] == 0.
+/// Returns true iff [bits] is exactly `0`.
 bool isZero(int bits) => bits == 0;
 
 /// Base class for common integral data types.
@@ -290,6 +314,9 @@ class Integral implements Comparable<Integral> {
   /// Returns an int containing only bits [0, [length]) from [bits].
   int mask(int bits) => bits & ~(~0 << length);
 
+  /// Compares to another [Integral] data type, comparing [length].
+  ///
+  /// Whether [isSigned] or not is ignored.
   @override
   int compareTo(Integral other) => length.compareTo(other.length);
 
@@ -302,13 +329,13 @@ class Integral implements Comparable<Integral> {
     });
   }
 
-  /// Whether [value] falls in the range of representable by this data type.
+  /// Returns whether [value] falls in the range of representable by this type.
   bool inRange(int value) => value >= min && value <= max;
 
-  /// Minimum value representable by this data type.
+  /// Minimum value representable by this type.
   int get min => isSigned ? (-pow(2, length - 1)) : 0;
 
-  /// Maximum value representable by this data type.
+  /// Maximum value representable by this type.
   int get max => isSigned ? pow(2, length - 1) - 1 : pow(2, length) - 1;
 
   /// Returns [bits] as a binary string representation.

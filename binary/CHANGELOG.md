@@ -1,3 +1,7 @@
+## 0.0.4
+
+- Updated the documentation and README.
+
 ## 0.0.3
 
 - Added `isZero`.

@@ -7,6 +7,12 @@ Utilities for working with binary data and bit manipulation in Dart.
 [![Coverage Status](https://coveralls.io/repos/github/matanlurey/gba.dart/badge.svg?branch=master)](https://coveralls.io/github/matanlurey/gba.dart?branch=master)
 [![documentation](https://img.shields.io/badge/Documentation-binary-blue.svg)](https://www.dartdocs.org/documentation/binary/latest)
 
+_**NOTE**: Unless otherwise noted, all functionality is based around treating
+bits as [little endian][], that is in a 32-bit integer the leftmost bit is 31
+and the rightmost bit is 0_
+
+[little endian]: https://en.wikipedia.org/wiki/Endianness
+
 ## Overview
 
 This library supports an `Integral` data type for fluent bit manipulation:
