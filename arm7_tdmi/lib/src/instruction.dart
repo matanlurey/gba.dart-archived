@@ -81,7 +81,7 @@ class _ADDS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 
     gprs.set(rd, result);
 
-    // TODO: If updatesSpsr && rd == program counter.
+    // TODO: If rd == program counter.
 
     gprs.cpsr
       ..n = int32.isNegative(result)
@@ -135,7 +135,7 @@ class _ADCS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
 
     gprs.set(rd, result);
 
-    // TODO: If updatesSpsr && rd == program counter.
+    // TODO: rd == program counter.
 
     gprs.cpsr
       ..n = int32.isNegative(result)
@@ -186,7 +186,21 @@ class _MOVS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
-    // TODO: implement execute
+    final gprs = cpu.gprs;
+    final rd = format.rd(instruction);
+    final shifterOperand = format.operand(instruction);
+
+    // TODO: if condition passes...
+
+    gprs.set(rd, shifterOperand);
+
+    // TODO: If rd == program counter.
+
+    gprs.cpsr
+      ..n = int32.isNegative(gprs.get(rd))
+      ..z = isZero(gprs.get(rd))
+      // TODO: Update this to shifterCarryOut once implemented.
+      ..c = true;
   }
 }
 
