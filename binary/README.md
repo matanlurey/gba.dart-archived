@@ -5,7 +5,7 @@ Utilities for working with binary data and bit manipulation in Dart.
 [![Pub](https://img.shields.io/pub/v/binary.svg)](https://pub.dartlang.org/packages/binary)
 [![Build Status](https://travis-ci.org/matanlurey/gba.dart.svg?branch=master)](https://travis-ci.org/matanlurey/gba.dart)
 [![Coverage Status](https://coveralls.io/repos/github/matanlurey/gba.dart/badge.svg?branch=master)](https://coveralls.io/github/matanlurey/gba.dart?branch=master)
-[![documentation](https://img.shields.io/badge/Documentation-dart_dev-blue.svg)](https://www.dartdocs.org/documentation/binary/latest)
+[![documentation](https://img.shields.io/badge/Documentation-binary-blue.svg)](https://www.dartdocs.org/documentation/binary/latest)
 
 ## Overview
 
