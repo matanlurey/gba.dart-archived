@@ -23,12 +23,14 @@ abstract class Arm7TdmiInstruction<F extends Arm7TdmiInstructionFormat> {
     @required this.suffix,
   });
 
-  bool _condition(Arm7Tdmi cpu, F format, int instruction) {
+  /// Executes an [instruction] of [format] on a [cpu].
+  ///
+  /// Returns whether the instruction was executed.
+  @mustCallSuper
+  @protected
+  bool execute(Arm7Tdmi cpu, F format, int instruction) {
     return format.cond(instruction).passes(cpu.gprs.cpsr);
   }
-
-  /// Executes an [instruction] of [format] on a [cpu].
-  void execute(Arm7Tdmi cpu, F format, int instruction);
 }
 
 /// An `ADD` instruction.
@@ -45,12 +47,12 @@ class _ADD extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _ADD() : super._(opcode: 0, suffix: 'ADD');
 
   @override
-  void execute(
+  bool execute(
     Arm7Tdmi cpu,
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
-    if (!_condition(cpu, format, instruction)) return;
+    if (!super.execute(cpu, format, instruction)) return false;
 
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
@@ -60,6 +62,7 @@ class _ADD extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     final result = op1 + op2;
 
     gprs.set(rd, result);
+    return true;
   }
 }
 
@@ -67,12 +70,12 @@ class _ADDS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _ADDS() : super._(opcode: 0, suffix: 'ADDS');
 
   @override
-  void execute(
+  bool execute(
     Arm7Tdmi cpu,
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
-    if (!_condition(cpu, format, instruction)) return;
+    if (!super.execute(cpu, format, instruction)) return false;
 
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
@@ -90,6 +93,7 @@ class _ADDS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
       ..z = isZero(gprs.get(rd))
       ..c = int32.hasCarryBit(result)
       ..v = int32.doesAddOverflow(op1, op2, result);
+    return true;
   }
 }
 
@@ -97,12 +101,12 @@ class _ADC extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _ADC() : super._(opcode: 5, suffix: 'ADC');
 
   @override
-  void execute(
+  bool execute(
     Arm7Tdmi cpu,
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
-    if (!_condition(cpu, format, instruction)) return;
+    if (!super.execute(cpu, format, instruction)) return false;
 
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
@@ -112,6 +116,7 @@ class _ADC extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     final result = op1 + op2;
 
     gprs.set(rd, result);
+    return true;
   }
 }
 
@@ -119,12 +124,12 @@ class _ADCS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _ADCS() : super._(opcode: 5, suffix: 'ADCS');
 
   @override
-  void execute(
+  bool execute(
     Arm7Tdmi cpu,
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
-    if (!_condition(cpu, format, instruction)) return;
+    if (!super.execute(cpu, format, instruction)) return false;
 
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
@@ -142,6 +147,7 @@ class _ADCS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
       ..z = isZero(gprs.get(rd))
       ..c = int32.hasCarryBit(result)
       ..v = int32.doesAddOverflow(op1, op2, result);
+    return true;
   }
 }
 
@@ -149,13 +155,14 @@ class _SWI extends Arm7TdmiInstruction<SoftwareInterrupt> {
   const _SWI() : super._(opcode: null, suffix: 'SWI');
 
   @override
-  void execute(
+  bool execute(
     Arm7Tdmi cpu,
     SoftwareInterrupt format,
     int instruction,
   ) {
-    if (!_condition(cpu, format, instruction)) return;
+    if (!super.execute(cpu, format, instruction)) return false;
     // TODO: implement execute
+    return true;
   }
 }
 
@@ -163,18 +170,19 @@ class _MOV extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _MOV() : super._(opcode: 13, suffix: 'MOV');
 
   @override
-  void execute(
+  bool execute(
     Arm7Tdmi cpu,
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
-    if (!_condition(cpu, format, instruction)) return;
+    if (!super.execute(cpu, format, instruction)) return false;
 
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
     final shifterOperand = format.operand(instruction);
 
     gprs.set(rd, shifterOperand);
+    return true;
   }
 }
 
@@ -182,12 +190,12 @@ class _MOVS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _MOVS() : super._(opcode: 13, suffix: 'MOVS');
 
   @override
-  void execute(
+  bool execute(
     Arm7Tdmi cpu,
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
-    if (!_condition(cpu, format, instruction)) return;
+    if (!super.execute(cpu, format, instruction)) return false;
 
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
@@ -202,6 +210,7 @@ class _MOVS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
       ..z = isZero(gprs.get(rd))
       // TODO: Update this to shifterCarryOut once implemented.
       ..c = true;
+    return true;
   }
 }
 
@@ -211,12 +220,13 @@ class _LDR extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const _LDR() : super._(opcode: null, suffix: 'LDR');
 
   @override
-  void execute(
+  bool execute(
     Arm7Tdmi cpu,
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
-    if (!_condition(cpu, format, instruction)) return;
+    if (!super.execute(cpu, format, instruction)) return false;
     // TODO: implement execute
+    return true;
   }
 }
