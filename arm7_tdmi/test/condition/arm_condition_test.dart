@@ -231,6 +231,4 @@ main() {
       cpsr(v: 0, c: 0, z: 0, n: 0),
     ],
   );
-
-  // TODO: Add remaining test cases back for CS -> NV.
 }
