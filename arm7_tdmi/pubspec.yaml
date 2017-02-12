@@ -17,3 +17,7 @@ dependencies:
 
 dev_dependencies:
   test: '^0.12.18+1'
+
+dependency_overrides:
+  binary:
+    path: ../binary
