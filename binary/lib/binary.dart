@@ -1,25 +1,3 @@
-/// Utilities for working with binary data and bit manipulation in Dart.
-///
-/// It's recommended whenever possible to use the [Integral] data types:
-/// * [bit]
-/// * [int4]
-/// * [int8]
-/// * [int16]
-/// * [int32]
-/// * [int64]
-/// * [int128]
-/// * [uint4]
-/// * [uint8]
-/// * [uint16]
-/// * [uint32]
-/// * [uint64]
-/// * [uint128]
-///
-/// **NOTE**: Every function in this library (unless labeled otherwise) treats
-/// bits as little-endian; that is in 32 bits the leftmost bit is 31 and the
-/// rightmost bit is 0.
-library binary;
-
 import 'dart:collection' show IterableBase;
 import 'dart:math' show pow;
 
