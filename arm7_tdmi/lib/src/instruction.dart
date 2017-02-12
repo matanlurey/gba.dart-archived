@@ -27,7 +27,6 @@ abstract class Arm7TdmiInstruction<F extends Arm7TdmiInstructionFormat> {
   ///
   /// Returns whether the instruction was executed.
   @mustCallSuper
-  @protected
   bool execute(Arm7Tdmi cpu, F format, int instruction) {
     return format.cond(instruction).passes(cpu.gprs.cpsr);
   }
