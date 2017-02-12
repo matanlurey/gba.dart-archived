@@ -1,6 +1,7 @@
 import 'dart:math' show pow;
 
 import 'package:binary/binary.dart';
+import 'package:meta/meta.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -21,6 +22,42 @@ void main() {
     );
   });
 
+  test('$Integral#toIterable', () {
+    expect(
+      uint32.toIterable(2),
+      [
+        0,
+        1,
+      ]..addAll(new Iterable.generate(30, (_) => 0)),
+    );
+  });
+
+  test('$Integral#hasCarryBit if operations produce a carry', () {
+    expect(int32.hasCarryBit(int32.max + int32.max), isTrue);
+    expect(int32.hasCarryBit(0 + int32.max), isFalse);
+    expect(int32.hasCarryBit(1 + int32.max), isTrue);
+    expect(int32.hasCarryBit(1 + 2), isFalse);
+  });
+
+  test('$Integral#mask', () {
+    int maxTimes16 = int32.max << 4;
+    expect(int32.mask(maxTimes16), 0xFFFFFFF0);
+  });
+
+  test('$Integral#doesAddOverflow if two additions produce an overflow', () {
+    expect(int32.doesAddOverflow(int32.max, 0, int32.max), isFalse);
+    expect(int32.doesAddOverflow(int32.max, 1, int32.max + 1), isTrue);
+    expect(int32.doesAddOverflow(-1, 2, -1 + 2), isFalse);
+    expect(int32.doesAddOverflow(0, 2 * int32.max, 0 + 2 * int32.max), isFalse);
+  });
+
+  test('$Integral#doesSubOverflow if two subtractions produce an overflow', () {
+    expect(int32.doesSubOverflow(int32.min, 0, int32.min - 0), isFalse);
+    expect(int32.doesSubOverflow(int32.min, 1, int32.min - 1), isTrue);
+    expect(int32.doesSubOverflow(1, 2, 1 - 2), isFalse);
+    expect(int32.doesSubOverflow(0, 2 * int32.max, 0 - 2 * int32.max), isFalse);
+  });
+
   group('bit', () {
     test('should have a length of 1 and be unsigned', () {
       expect(bit.isSigned, isFalse);
@@ -38,69 +75,70 @@ void main() {
     });
   });
 
-  group('uint32', () {
-    test('should have a length of 32 and be unsigned', () {
-      expect(uint32.isSigned, isFalse);
-      expect(uint32.isUnsigned, isTrue);
-      expect(uint32.length, 32);
-    });
-
-    test('should be able to be 0 to 2 ^ 32 - 1', () {
-      expect(uint32.min, 0);
-      expect(uint32.max, pow(2, 32) - 1);
-      expect(uint32.inRange(-1), isFalse);
-      expect(uint32.inRange(pow(2, 32) - 1), isTrue);
-      expect(uint32.inRange(pow(2, 32)), isFalse);
-    });
-
-    test('mask should correctly mask values', () {
-      int maxTimes16 = uint32.max << 4;
-      expect(uint32.mask(maxTimes16), 0xFFFFFFF0);
-    });
-
-    test('should be able to iterate through bits', () {
-      expect(
-        uint32.toIterable(2),
-        [
-          0,
-          1,
-        ]..addAll(new Iterable.generate(30, (_) => 0)),
-      );
-    });
+  const {
+    int4: 4,
+    int8: 8,
+    int16: 16,
+    int32: 32,
+    int64: 64,
+    int128: 128,
+  }.forEach((type, length) {
+    _runIntegralTests(type, length: length, signed: true);
   });
 
-  group('int32', () {
-    test('mask should correctly mask values', () {
-      int maxTimes16 = int32.max << 4;
-      expect(int32.mask(maxTimes16), 0xFFFFFFF0);
-    });
-
-    test('carryFrom should return true iff the given operands produce a carry',
-        () {
-      expect(int32.hasCarryBit(int32.max + int32.max), true);
-      expect(int32.hasCarryBit(0 + int32.max), false);
-      expect(int32.hasCarryBit(1 + int32.max), true);
-      expect(int32.hasCarryBit(1 + 2), false);
-    });
-
-    test(
-        'overflowFromAdd should return true iff an addition produces an '
-        'overflow', () {
-      expect(int32.doesAddOverflow(int32.max, 0, int32.max), false);
-      expect(int32.doesAddOverflow(int32.max, 1, int32.max + 1), true);
-      expect(int32.doesAddOverflow(-1, 2, -1 + 2), false);
-      expect(int32.doesAddOverflow(0, 2 * int32.max, 0 + 2 * int32.max), false);
-    });
-
-    test(
-        'overflowFromSub should return true iff a subtraction produces an '
-        'overflow', () {
-      expect(int32.doesSubOverflow(int32.min, 0, int32.min - 0), false);
-      expect(int32.doesSubOverflow(int32.min, 1, int32.min - 1), true);
-      expect(int32.doesSubOverflow(1, 2, 1 - 2), false);
-      expect(int32.doesSubOverflow(0, 2 * int32.max, 0 - 2 * int32.max), false);
-    });
+  const {
+    uint4: 4,
+    uint8: 8,
+    uint16: 16,
+    uint32: 32,
+    uint64: 64,
+    uint128: 128,
+  }.forEach((type, length) {
+    _runIntegralTests(type, length: length, signed: false);
   });
+}
 
-  // TODO: Add more exhaustive tests and tests for the other data types.
+void _runIntegralTests(
+  Integral type, {
+  @required int length,
+  @required bool signed,
+}) {
+  group('$type', () {
+    test('should have a lenfth of $length', () {
+      expect(type, hasLength(length));
+    });
+
+    if (signed) {
+      test('should be signed', () {
+        expect(type.isSigned, isTrue);
+        expect(type.isUnsigned, isFalse);
+      });
+
+      var expectedMin = -pow(2, length - 1);
+      test('should have a minimum value of $expectedMin', () {
+        expect(type.min, expectedMin);
+      });
+
+      var expectedMax = pow(2, length - 1) - 1;
+      test('should have a maximum value of $expectedMax', () {
+        expect(type.max, expectedMax);
+      });
+    } else {
+      test('should be unsigned', () {
+        expect(type.isSigned, isFalse);
+        expect(type.isUnsigned, isTrue);
+      });
+
+      test('should have a minimum value of 0', () {
+        expect(type.min, 0);
+      });
+
+      var expectedMax = pow(2, length) - 1;
+      test('should have a maximum value of $expectedMax', () {
+        expect(type.max, expectedMax);
+      });
+    }
+
+    test('should be able to mask values', () {});
+  });
 }

@@ -472,7 +472,7 @@ const Integral uint64 = const Integral._unsigned(64);
 /// Commonly used to represent:
 /// * Complicated scientific calculations
 /// * IPv6 addresses GUIDs
-const Integral int128 = const Integral._(64);
+const Integral int128 = const Integral._(128);
 
 /// An unsigned 128-bit aggregation.
 ///
@@ -481,4 +481,4 @@ const Integral int128 = const Integral._(64);
 /// Commonly used to represent:
 /// * Complicated scientific calculations
 /// * IPv6 addresses GUIDs
-const Integral uint128 = const Integral._unsigned(64);
+const Integral uint128 = const Integral._unsigned(128);
