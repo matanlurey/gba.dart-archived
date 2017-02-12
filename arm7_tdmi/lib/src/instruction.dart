@@ -23,6 +23,10 @@ abstract class Arm7TdmiInstruction<F extends Arm7TdmiInstructionFormat> {
     @required this.suffix,
   });
 
+  bool _condition(Arm7Tdmi cpu, F format, int instruction) {
+    return format.cond(instruction).passes(cpu.gprs.cpsr);
+  }
+
   /// Executes an [instruction] of [format] on a [cpu].
   void execute(Arm7Tdmi cpu, F format, int instruction);
 }
@@ -46,12 +50,11 @@ class _ADD extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
+    if (!_condition(cpu, format, instruction)) return;
+
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
     final rn = format.rn(instruction);
-
-    // TODO: if condition passes...
-
     final op1 = int32.mask(gprs.get(rn));
     final op2 = int32.mask(format.operand(instruction));
     final result = op1 + op2;
@@ -69,12 +72,11 @@ class _ADDS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
+    if (!_condition(cpu, format, instruction)) return;
+
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
     final rn = format.rn(instruction);
-
-    // TODO: if condition passes...
-
     final op1 = int32.mask(gprs.get(rn));
     final op2 = int32.mask(format.operand(instruction));
     final result = op1 + op2;
@@ -100,12 +102,11 @@ class _ADC extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
+    if (!_condition(cpu, format, instruction)) return;
+
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
     final rn = format.rn(instruction);
-
-    // TODO: if condition passes...
-
     final op1 = int32.mask(gprs.get(rn));
     final op2 = int32.mask(format.operand(instruction)) + (gprs.cpsr.c ? 1 : 0);
     final result = op1 + op2;
@@ -123,12 +124,11 @@ class _ADCS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
+    if (!_condition(cpu, format, instruction)) return;
+
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
     final rn = format.rn(instruction);
-
-    // TODO: if condition passes...
-
     final op1 = int32.mask(gprs.get(rn));
     final op2 = int32.mask(format.operand(instruction)) + (gprs.cpsr.c ? 1 : 0);
     final result = op1 + op2;
@@ -154,6 +154,7 @@ class _SWI extends Arm7TdmiInstruction<SoftwareInterrupt> {
     SoftwareInterrupt format,
     int instruction,
   ) {
+    if (!_condition(cpu, format, instruction)) return;
     // TODO: implement execute
   }
 }
@@ -167,11 +168,11 @@ class _MOV extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
+    if (!_condition(cpu, format, instruction)) return;
+
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
     final shifterOperand = format.operand(instruction);
-
-    // TODO: if condition passes...
 
     gprs.set(rd, shifterOperand);
   }
@@ -186,11 +187,11 @@ class _MOVS extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
+    if (!_condition(cpu, format, instruction)) return;
+
     final gprs = cpu.gprs;
     final rd = format.rd(instruction);
     final shifterOperand = format.operand(instruction);
-
-    // TODO: if condition passes...
 
     gprs.set(rd, shifterOperand);
 
@@ -215,6 +216,7 @@ class _LDR extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
     DataProcessingOrPsrTransfer format,
     int instruction,
   ) {
+    if (!_condition(cpu, format, instruction)) return;
     // TODO: implement execute
   }
 }
