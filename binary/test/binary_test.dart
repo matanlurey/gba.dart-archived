@@ -31,31 +31,33 @@ void main() {
       ]..addAll(new Iterable.generate(30, (_) => 0)),
     );
   });
+  
+  group('$Integral#', () {
+    test('hasCarryBit if operations produce a carry', () {
+      expect(int32.hasCarryBit(int32.max + int32.max), isTrue);
+      expect(int32.hasCarryBit(0 + int32.max), isFalse);
+      expect(int32.hasCarryBit(1 + int32.max), isTrue);
+      expect(int32.hasCarryBit(1 + 2), isFalse);
+    });
 
-  test('$Integral#hasCarryBit if operations produce a carry', () {
-    expect(int32.hasCarryBit(int32.max + int32.max), isTrue);
-    expect(int32.hasCarryBit(0 + int32.max), isFalse);
-    expect(int32.hasCarryBit(1 + int32.max), isTrue);
-    expect(int32.hasCarryBit(1 + 2), isFalse);
-  });
+    test('mask', () {
+      int maxTimes16 = int32.max << 4;
+      expect(int32.mask(maxTimes16), 0xFFFFFFF0);
+    });
 
-  test('$Integral#mask', () {
-    int maxTimes16 = int32.max << 4;
-    expect(int32.mask(maxTimes16), 0xFFFFFFF0);
-  });
+    test('doesAddOverflow if two additions produce an overflow', () {
+      expect(int32.doesAddOverflow(int32.max, 0, int32.max), isFalse);
+      expect(int32.doesAddOverflow(int32.max, 1, int32.max + 1), isTrue);
+      expect(int32.doesAddOverflow(-1, 2, -1 + 2), isFalse);
+      expect(int32.doesAddOverflow(0, 2 * int32.max, 0 + 2 * int32.max), isFalse);
+    });
 
-  test('$Integral#doesAddOverflow if two additions produce an overflow', () {
-    expect(int32.doesAddOverflow(int32.max, 0, int32.max), isFalse);
-    expect(int32.doesAddOverflow(int32.max, 1, int32.max + 1), isTrue);
-    expect(int32.doesAddOverflow(-1, 2, -1 + 2), isFalse);
-    expect(int32.doesAddOverflow(0, 2 * int32.max, 0 + 2 * int32.max), isFalse);
-  });
-
-  test('$Integral#doesSubOverflow if two subtractions produce an overflow', () {
-    expect(int32.doesSubOverflow(int32.min, 0, int32.min - 0), isFalse);
-    expect(int32.doesSubOverflow(int32.min, 1, int32.min - 1), isTrue);
-    expect(int32.doesSubOverflow(1, 2, 1 - 2), isFalse);
-    expect(int32.doesSubOverflow(0, 2 * int32.max, 0 - 2 * int32.max), isFalse);
+    test('doesSubOverflow if two subtractions produce an overflow', () {
+      expect(int32.doesSubOverflow(int32.min, 0, int32.min - 0), isFalse);
+      expect(int32.doesSubOverflow(int32.min, 1, int32.min - 1), isTrue);
+      expect(int32.doesSubOverflow(1, 2, 1 - 2), isFalse);
+      expect(int32.doesSubOverflow(0, 2 * int32.max, 0 - 2 * int32.max), isFalse);
+    });
   });
 
   group('bit', () {
@@ -104,7 +106,7 @@ void _runIntegralTests(
   @required bool signed,
 }) {
   group('$type', () {
-    test('should have a lenfth of $length', () {
+    test('should have a length of $length', () {
       expect(type, hasLength(length));
     });
 
