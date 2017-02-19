@@ -1,4 +1,5 @@
 import 'package:arm7_tdmi/arm7_tdmi.dart';
+import 'package:arm7_tdmi/src/instruction.dart';
 import 'package:binary/binary.dart';
 
 /// "Decodes" a compiled ARM7/TDMI program so it can be executed in an emulator.
@@ -89,7 +90,25 @@ abstract class Arm7TdmiInstructionFormat {
     return new Arm7TdmiCondition.decode(instruction & _last4BitsMask);
   }
 
-  /*?*/ decode(int instruction) => throw new UnimplementedError();
+  /// Returns ARM instruction type for this format by decoding [instruction].
+  Arm7TdmiInstruction decode(int instruction);
+}
+
+void _assertValidOpcode(
+  Arm7TdmiInstruction decoded,
+  int instruction,
+  int opcode,
+) {
+  assert(() {
+    if (decoded == null) {
+      throw new ArgumentError.value(
+        instruction,
+        'instruction',
+        'Unrecognized or supported opcode: $opcode',
+      );
+    }
+    return true;
+  });
 }
 
 /// Instruction format for Data Processing/PSR transformer.
@@ -101,7 +120,49 @@ abstract class Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 1 Opcode* S Rn***** Rd***** Operand2***************
 /// ```
 class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
+  static const _opAND = 0x0;
+  static const _opEOR = 0x1;
+  static const _opSUB = 0x2;
+  static const _opRSB = 0x3;
+  static const _opADD = 0x4;
+  static const _opADC = 0x5;
+  static const _opSBC = 0x6;
+  static const _opRSC = 0x7;
+  static const _opTST = 0x8;
+  static const _opTEQ = 0x9;
+  static const _opCMP = 0xA;
+  static const _opCMN = 0xB;
+  static const _opORR = 0xC;
+  static const _opMOV = 0xD;
+  static const _opBIC = 0xE;
+  static const _opMVN = 0xF;
+
   const DataProcessingOrPsrTransfer() : super._(0x200);
+
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    final opcode = this.opcode(instruction);
+    final decoded = const {
+      _opAND: null,
+      _opEOR: null,
+      _opSUB: null,
+      _opRSB: null,
+      _opADD: ADD,
+      _opADC: ADC,
+      _opSBC: null,
+      _opRSC: null,
+      _opTST: null,
+      _opTEQ: null,
+      _opCMP: null,
+      _opCMN: null,
+      _opORR: null,
+      _opMOV: MOV,
+      _opBIC: null,
+      _opMVN: null,
+    }[opcode];
+    _assertValidOpcode(decoded, instruction, opcode);
+    return decoded;
+  }
 
   /// Instruction type.
   int opcode(int instruction) => uint32.range(instruction, 24, 21);
@@ -129,6 +190,11 @@ class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
 /// ```
 class Multiply extends Arm7TdmiInstructionFormat {
   const Multiply() : super._(0x009);
+
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
 
   /// Returns whether `A` is set.
   int a(int instruction) => uint32.get(instruction, 21);
@@ -159,6 +225,11 @@ class Multiply extends Arm7TdmiInstructionFormat {
 /// ```
 class MultiplyLong extends Arm7TdmiInstructionFormat {
   const MultiplyLong() : super._(0x089);
+
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
 
   /// Returns whether `A` is set.
   int a(int instruction) => uint32.get(instruction, 21);
@@ -193,6 +264,11 @@ class MultiplyLong extends Arm7TdmiInstructionFormat {
 class SingleDataSwap extends Arm7TdmiInstructionFormat {
   const SingleDataSwap() : super._(0x109);
 
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
+
   /// Returns ???.
   int b(int instruction) => uint32.get(instruction, 22);
 
@@ -217,6 +293,11 @@ class SingleDataSwap extends Arm7TdmiInstructionFormat {
 class BrandAndExchange extends Arm7TdmiInstructionFormat {
   const BrandAndExchange() : super._(0x121);
 
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
+
   /// Returns what register to read from.
   int rn(int instruction) => uint32.range(instruction, 3, 0);
 }
@@ -231,6 +312,11 @@ class BrandAndExchange extends Arm7TdmiInstructionFormat {
 /// ```
 class HalfWordDataTransferRegisterOffset extends Arm7TdmiInstructionFormat {
   const HalfWordDataTransferRegisterOffset() : super._(0x00B);
+
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
 
   /// Returns ???.
   int p(int instruction) => uint32.get(instruction, 24);
@@ -271,6 +357,11 @@ class HalfWordDataTransferRegisterOffset extends Arm7TdmiInstructionFormat {
 class HalfWordDataTransferImmediateOffset extends Arm7TdmiInstructionFormat {
   const HalfWordDataTransferImmediateOffset() : super._(0x04B);
 
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
+
   /// Returns ???.
   int p(int instruction) => uint32.get(instruction, 24);
 
@@ -310,6 +401,15 @@ class HalfWordDataTransferImmediateOffset extends Arm7TdmiInstructionFormat {
 class SingleDataTransfer extends Arm7TdmiInstructionFormat {
   const SingleDataTransfer() : super._(0x600);
 
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    if (isZero(l(instruction))) {
+      throw new UnimplementedError('STR');
+    } else {
+      return LDR;
+    }
+  }
+
   /// Returns ???.
   int i(int instruction) => uint32.get(instruction, 25);
 
@@ -325,7 +425,7 @@ class SingleDataTransfer extends Arm7TdmiInstructionFormat {
   /// Returns ???.
   int w(int instruction) => uint32.get(instruction, 21);
 
-  /// Returns ???.
+  /// Returns the load/store to memory bit (0=Store, 1=Load).
   int l(int instruction) => uint32.get(instruction, 20);
 
   /// Returns ???.
@@ -348,6 +448,11 @@ class SingleDataTransfer extends Arm7TdmiInstructionFormat {
 /// ```
 class Undefined extends Arm7TdmiInstructionFormat {
   const Undefined() : super._(0x601);
+
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
 }
 
 /// Instruction format for Block Data Transfer.
@@ -360,6 +465,11 @@ class Undefined extends Arm7TdmiInstructionFormat {
 /// ```
 class BlockDataTransfer extends Arm7TdmiInstructionFormat {
   const BlockDataTransfer() : super._(0x800);
+
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
 
   /// Returns ???.
   int p(int instruction) => uint32.get(instruction, 24);
@@ -394,6 +504,11 @@ class BlockDataTransfer extends Arm7TdmiInstructionFormat {
 class Branch extends Arm7TdmiInstructionFormat {
   const Branch() : super._(0xA00);
 
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
+
   /// Returns ???.
   int l(int instruction) => uint32.get(instruction, 24);
 
@@ -411,6 +526,11 @@ class Branch extends Arm7TdmiInstructionFormat {
 /// ```
 class CoprocessorDataTransfer extends Arm7TdmiInstructionFormat {
   const CoprocessorDataTransfer() : super._(0xC00);
+
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
 
   /// Returns ???.
   int p(int instruction) => uint32.get(instruction, 24);
@@ -451,6 +571,11 @@ class CoprocessorDataTransfer extends Arm7TdmiInstructionFormat {
 class CoprocessorDataOperation extends Arm7TdmiInstructionFormat {
   const CoprocessorDataOperation() : super._(0xE00);
 
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
+
   /// Returns ???.
   int cpOpc(int instruction) => uint32.range(instruction, 23, 20);
 
@@ -480,6 +605,11 @@ class CoprocessorDataOperation extends Arm7TdmiInstructionFormat {
 /// ```
 class CoprocessorRegisterTransfer extends Arm7TdmiInstructionFormat {
   const CoprocessorRegisterTransfer() : super._(0xE00);
+
+  @override
+  Arm7TdmiInstruction decode(int instruction) {
+    throw new UnimplementedError();
+  }
 
   /// Returns ???.
   int cpOpc(int instruction) => uint32.range(instruction, 23, 21);
@@ -513,4 +643,7 @@ class CoprocessorRegisterTransfer extends Arm7TdmiInstructionFormat {
 /// ```
 class SoftwareInterrupt extends Arm7TdmiInstructionFormat {
   const SoftwareInterrupt() : super._(0xE01);
+
+  @override
+  Arm7TdmiInstruction decode(_) => SWI;
 }

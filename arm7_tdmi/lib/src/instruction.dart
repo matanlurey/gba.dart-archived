@@ -51,10 +51,8 @@ abstract class Arm7TdmiInstruction<F extends Arm7TdmiInstructionFormat> {
   /// Returns whether [cpu] is in a state where [instruction] passes.
   @protected
   bool passes(Arm7Tdmi cpu, int instruction) {
-    return true;
-    // TODO: Enable once hello_world_test passes.
-    // final condition = new Arm7TdmiCondition.decode(instruction);
-    // return condition.passes(cpu.gprs.cpsr);
+    final condition = new Arm7TdmiCondition.decode(instruction);
+    return condition.passes(cpu.gprs.cpsr);
   }
 }
 
