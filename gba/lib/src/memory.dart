@@ -157,7 +157,7 @@ class MemoryManager {
 /// It is illegal to read from this RAM area when protection is enabled. For
 /// example, a BIOS will run reading a memory location, and once done will
 /// enable protection to avoid applications reading from it.
-class _ProtectedMemory extends Memory with ReadOnlyMemory {
+class _ProtectedMemory extends Memory with WriteOnlyMemory {
   static bool _noProtection() => false;
 
   final Func0<bool> _isProtected;

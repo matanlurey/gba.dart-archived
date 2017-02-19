@@ -32,5 +32,5 @@ export 'package:arm7_tdmi/src/memory.dart'
         Memory,
         MemoryAccess,
         MemoryAccessError,
-        WriteOnlyMemory,
-        ReadOnlyMemory;
+        ReadOnlyMemory,
+        WriteOnlyMemory;

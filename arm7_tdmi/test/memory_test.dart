@@ -61,8 +61,8 @@ main() {
     );
   });
 
-  group('$ReadOnlyMemory', () {
-    ReadOnlyMemory memory;
+  group('$WriteOnlyMemory', () {
+    WriteOnlyMemory memory;
 
     setUp(() => memory = new _NoWriteMemoryAccess());
 
@@ -88,8 +88,8 @@ main() {
     });
   });
 
-  group('$WriteOnlyMemory', () {
-    WriteOnlyMemory memory;
+  group('$ReadOnlyMemory', () {
+    ReadOnlyMemory memory;
 
     setUp(() => memory = new _NoReadMemoryAccess());
 
@@ -116,12 +116,12 @@ main() {
   });
 }
 
-class _NoReadMemoryAccess extends WriteOnlyMemory {
+class _NoReadMemoryAccess extends ReadOnlyMemory {
   @override
   noSuchMethod(_) => super.noSuchMethod(_);
 }
 
-class _NoWriteMemoryAccess extends ReadOnlyMemory {
+class _NoWriteMemoryAccess extends WriteOnlyMemory {
   @override
   noSuchMethod(_) => super.noSuchMethod(_);
 }
