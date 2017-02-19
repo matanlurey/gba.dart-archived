@@ -31,7 +31,7 @@ void main() {
       ]..addAll(new Iterable.generate(30, (_) => 0)),
     );
   });
-  
+
   group('$Integral#', () {
     test('hasCarryBit if operations produce a carry', () {
       expect(int32.hasCarryBit(int32.max + int32.max), isTrue);
@@ -49,14 +49,16 @@ void main() {
       expect(int32.doesAddOverflow(int32.max, 0, int32.max), isFalse);
       expect(int32.doesAddOverflow(int32.max, 1, int32.max + 1), isTrue);
       expect(int32.doesAddOverflow(-1, 2, -1 + 2), isFalse);
-      expect(int32.doesAddOverflow(0, 2 * int32.max, 0 + 2 * int32.max), isFalse);
+      expect(
+          int32.doesAddOverflow(0, 2 * int32.max, 0 + 2 * int32.max), isFalse);
     });
 
     test('doesSubOverflow if two subtractions produce an overflow', () {
       expect(int32.doesSubOverflow(int32.min, 0, int32.min - 0), isFalse);
       expect(int32.doesSubOverflow(int32.min, 1, int32.min - 1), isTrue);
       expect(int32.doesSubOverflow(1, 2, 1 - 2), isFalse);
-      expect(int32.doesSubOverflow(0, 2 * int32.max, 0 - 2 * int32.max), isFalse);
+      expect(
+          int32.doesSubOverflow(0, 2 * int32.max, 0 - 2 * int32.max), isFalse);
     });
   });
 
