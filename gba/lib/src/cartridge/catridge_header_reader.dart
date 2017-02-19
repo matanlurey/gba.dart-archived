@@ -38,7 +38,7 @@ class CartridgeHeaderReader extends Memory with UnwriteableMemory {
 /// The cartridge won't work if this data is missing or modified.
 ///
 /// Source: https://github.com/garbear/pyrominfo/blob/master/pyrominfo/gba.py
-final nintendoLogo = new Uint8List.fromList(const <int>[
+final nintendoLogo = const <int>[
   0x24,
   0xFF,
   0xAE,
@@ -195,4 +195,4 @@ final nintendoLogo = new Uint8List.fromList(const <int>[
   0xD4,
   0xF8,
   0x07,
-]);
+];
