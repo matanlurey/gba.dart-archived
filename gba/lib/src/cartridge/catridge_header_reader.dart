@@ -5,7 +5,7 @@ import 'package:arm7_tdmi/src/memory.dart';
 import 'package:binary/binary.dart';
 import 'package:collection/collection.dart';
 
-/// Read a GameBoy Advance cartridge header.
+/// Reads a GameBoy Advance cartridge header.
 ///
 /// Technical information can be found at http://problemkaputt.de/gbatek.htm
 class CartridgeHeaderReader extends Memory with UnwriteableMemory {
@@ -18,9 +18,7 @@ class CartridgeHeaderReader extends Memory with UnwriteableMemory {
   /// Size: 4bytes
   List<int> get entryPoint => _readBytes(0, 4);
 
-  /// Contains the nintendo logo which is displayed during the boot procedure.
-  ///
-  /// The cartridge won't work if this data is missing or modified.
+  /// Verifies that the header contains the valid nintendo logo bitmap.
   bool get hasValidNintendoLogo =>
       new ListEquality().equals(nintendoLogo, _readBytes(0x4, 156));
 
@@ -36,6 +34,8 @@ class CartridgeHeaderReader extends Memory with UnwriteableMemory {
 }
 
 /// The nintendo log watermark.
+///
+/// The cartridge won't work if this data is missing or modified.
 ///
 /// Source: https://github.com/garbear/pyrominfo/blob/master/pyrominfo/gba.py
 final nintendoLogo = new Uint8List.fromList(const <int>[
