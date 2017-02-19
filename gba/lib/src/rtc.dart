@@ -69,6 +69,11 @@ class RealTimeClock {
     return counter;
   }
 
+  /// Sets the [direction].
+  void setDirection(int direction) {
+    _direction = direction;
+  }
+
   /// Sets pins according to [nibble].
   void setPins(int nibble) {
     switch (_transferStep) {

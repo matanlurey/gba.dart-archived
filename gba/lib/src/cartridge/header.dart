@@ -16,19 +16,21 @@ class CartridgeHeaderReader extends Memory with UnwriteableMemory {
   /// This opcode redirects to the actual start address of the cartridge.
   ///
   /// Size: 4bytes
-  List<int> get entryPoint => _readBytes(0, 4);
+  int get entryPoint => read32(0);
 
   /// Verifies that the header contains the valid nintendo logo bitmap.
-  bool get hasValidNintendoLogo =>
-      new ListEquality().equals(nintendoLogo, _readBytes(0x4, 156));
+  bool get hasValidNintendoLogo => const ListEquality().equals(
+        nintendoLogo,
+        _readBytes(0x4, 156),
+      );
 
-  /// The ascii game title.
+  /// The ASCII game title.
   String get gameTitle => new String.fromCharCodes(
       _readBytes(0xA0, 12).takeWhile((byte) => !isZero(byte)));
 
-  /* Multiboot/Slave data omitted */
+  // Multi-Boot/Slave data omitted.
 
-  Uint8List _readBytes(int address, int numBytes) =>
+  List<int> _readBytes(int address, int numBytes) =>
       new Uint8List.fromList(new List.generate(
           numBytes, (byteCount) => super.read8(address + byteCount)));
 }
