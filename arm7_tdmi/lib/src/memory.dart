@@ -144,7 +144,7 @@ class MemoryAccessError extends UnsupportedError {
 /// A mixin or base class that prevents reading from a location in RAM.
 ///
 /// Throws a [MemoryAccessError] when reading is attempted.
-abstract class ReadOnlyMemory implements MemoryAccess {
+abstract class UnreadableMemory implements MemoryAccess {
   @override
   int read8(int address) => throw new MemoryAccessError.read(address);
 
@@ -158,7 +158,7 @@ abstract class ReadOnlyMemory implements MemoryAccess {
 /// A mixin or base class that prevents writing to a location in RAM.
 ///
 /// Throws a [MemoryAccessError] when writing is attempted.
-abstract class WriteOnlyMemory implements MemoryAccess {
+abstract class UnwriteableMemory implements MemoryAccess {
   @override
   void write8(int address, int value) {
     throw new MemoryAccessError.write(address, value);
