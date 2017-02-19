@@ -39,10 +39,12 @@ class MemoryManager {
   static const _offsetBios = 0;
   static const _offsetInternal = _ramSizeBios;
   static const _offsetWork = _offsetInternal + _ramSizeInternal;
+  static const _offsetVideo = 0x06000000;
 
   static const _maskBios = 0x00003FFF;
   static const _maskWork = 0x0003FFFF;
   static const _maskInternal = 0x00007FFF;
+  static const _maskVideo = 0x06017FFF;
 
   static const _totalRamSize = _ramSizeBios +
       _ramSizeWork +
@@ -73,6 +75,13 @@ class MemoryManager {
   /// Can be used for code and data.
   final MemoryAccess work;
 
+  /// Video RAM.
+  ///
+  /// This is where the data used for backgrounds and sprites are stored. The
+  /// interpretation of this data depends on a number of things, including video
+  /// mode and background and sprite settings.
+  final MemoryAccess video;
+
   /// Memory-mapped IO registers.
   ///
   /// Used to control graphics, sound, buttons and other features.
@@ -82,13 +91,6 @@ class MemoryManager {
   ///
   /// The first is for backgrounds, the second for sprites.
   MemoryAccess get palette => throw new UnimplementedError();
-
-  /// Video RAM.
-  ///
-  /// This is where the data used for backgrounds and sprites are stored. The
-  /// interpretation of this data depends on a number of things, including video
-  /// mode and background and sprite settings.
-  MemoryAccess get video => throw new UnimplementedError();
 
   /// Object Attribute Memory.
   ///
@@ -133,6 +135,11 @@ class MemoryManager {
       _offsetWork,
       _ramSizeWork,
     );
+    final viewVideo = new Uint8List.view(
+      buffer,
+      _offsetVideo,
+      _ramSizeVideo,
+    );
     // Create memory access interfaces and finalize the memory manager unit.
     return new MemoryManager._(
       buffer,
@@ -150,6 +157,11 @@ class MemoryManager {
         _maskInternal,
         new Memory.view(viewInternal.buffer),
       ),
+      // Video: Masked.
+      video: new BitwiseAndMemoryMask(
+        _maskVideo,
+        new Memory.view(viewVideo.buffer)
+      ),
       // Working: Masked.
       work: new BitwiseAndMemoryMask(
         _maskWork,
@@ -164,6 +176,7 @@ class MemoryManager {
     @required this.bios,
     @required this.internal,
     @required this.work,
+    @required this.video,
   });
 
   /// Loads the BIOS returning a future that completes when done.
