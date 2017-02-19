@@ -9,7 +9,9 @@ class SWI$ extends Arm7TdmiInstruction<SoftwareInterrupt> {
         );
 
   @override
-  void execute() {}
+  void execute({@required Arm7Tdmi cpu}) {
+    cpu.service.call(cpu);
+  }
 
   @override
   bool interpret(
@@ -20,7 +22,7 @@ class SWI$ extends Arm7TdmiInstruction<SoftwareInterrupt> {
       return false;
     }
     // TODO: Implement.
-    execute();
+    execute(cpu: cpu);
     return true;
   }
 }

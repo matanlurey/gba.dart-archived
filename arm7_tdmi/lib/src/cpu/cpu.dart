@@ -82,6 +82,10 @@ import 'package:meta/meta.dart';
 /// * User switches back to old state when leaving an exception
 class Arm7Tdmi {
   final Arm7TdmiRegisters gprs;
+  final Arm7TdmiService service;
 
-  Arm7Tdmi({@required this.gprs});
+  Arm7Tdmi({
+    @required this.gprs,
+    this.service: const Arm7TdmiService(),
+  });
 }
