@@ -79,6 +79,12 @@ void main() {
     });
   });
 
+  test('pack should correctly pack a list of bytes', () {
+    expect(pack([]), 0);
+    expect(pack([0xA]), 0xA);
+    expect(pack([0xAB, 0xCD]), 0xABCD);
+  });
+
   const {
     int4: 4,
     int8: 8,

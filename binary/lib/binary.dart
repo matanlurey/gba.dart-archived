@@ -141,6 +141,21 @@ int parseBits(String bits) {
 /// Returns true iff [bits] is exactly `0`.
 bool isZero(int bits) => bits == 0;
 
+/// Returns an int consisting of [bytes] packed left-to-right.
+///
+/// Every element of [bytes] is truncated as an 8-bit integer in the range
+/// [0, [uint8.max]].  0 is returned if [bytes] is empty.
+int pack(List<int> bytes) {
+  int value = 0;
+
+  for (int i = 0; i < bytes.length; i++) {
+    int byte = uint8.mask(bytes[i]);
+    int numBytesLeft = bytes.length - (i + 1);
+    value = value | (byte << (8 * numBytesLeft));
+  }
+  return value;
+}
+
 /// Base class for common integral data types.
 class Integral implements Comparable<Integral> {
   /// All _signed_ data types.
