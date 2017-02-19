@@ -59,7 +59,8 @@ class RealTimeClock {
 
   RealTimeClock({
     Clock clock: const Clock(),
-  }) : _clock = clock;
+  })
+      : _clock = clock;
 
   static int _bcd(int binary) {
     var counter = binary % 10;
@@ -87,7 +88,7 @@ class RealTimeClock {
           _bits |= ((nibble & 2) >> 1) << _bitsRead;
         } else if (!isZero(nibble & 4)) {
           // SIO direction should always != this.read
-          if (!isZero(_direction & 2) && !false/*this.read*/) {
+          if (!isZero(_direction & 2) && !false /*this.read*/) {
             if (++_bitsRead == 8) {
               processByte();
             } else {
