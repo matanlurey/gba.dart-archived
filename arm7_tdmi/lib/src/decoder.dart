@@ -85,14 +85,20 @@ abstract class Arm7TdmiInstructionFormat {
 class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
   const DataProcessingOrPsrTransfer() : super._(0x200);
 
-  /// Returns what register to write to.
-  int rd(int instruction) => 0;
+  /// Instruction type.
+  int opcode(int instruction) => uint32.range(instruction, 24, 21);
+
+  /// Returns whether `S` is set.
+  int s(int instruction) => uint32.get(instruction, 20);
 
   /// Returns what register to read from.
-  int rn(int instruction) => 0;
+  int rn(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns what register to write to.
+  int rd(int instruction) => uint32.range(instruction, 15, 12);
 
   /// Type of operand to use.
-  int operand(int instruction) => 0;
+  int operand(int instruction) => uint32.range(instruction, 11, 0);
 }
 
 /// Instruction format for Multiply.
@@ -105,6 +111,24 @@ class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
 /// ```
 class Multiply extends Arm7TdmiInstructionFormat {
   const Multiply() : super._(0x009);
+
+  /// Returns whether `A` is set.
+  int a(int instruction) => uint32.get(instruction, 21);
+
+  /// Returns whether `S` is set.
+  int s(int instruction) => uint32.get(instruction, 20);
+
+  /// Returns what register to write to.
+  int rd(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns what register to read from.
+  int rn(int instruction) => uint32.range(instruction, 15, 12);
+
+  /// Returns ???.
+  int rs(int instruction) => uint32.range(instruction, 11, 8);
+
+  /// Returns ???.
+  int rm(int instruction) => uint32.range(instruction, 3, 0);
 }
 
 /// Instruction format for Multiply Long.
@@ -117,6 +141,27 @@ class Multiply extends Arm7TdmiInstructionFormat {
 /// ```
 class MultiplyLong extends Arm7TdmiInstructionFormat {
   const MultiplyLong() : super._(0x089);
+
+  /// Returns whether `A` is set.
+  int a(int instruction) => uint32.get(instruction, 21);
+
+  /// Returns ???.
+  int rdHi(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns ???.
+  int rdLo(int instruction) => uint32.range(instruction, 15, 12);
+
+  /// Returns whether `S` is set.
+  int s(int instruction) => uint32.get(instruction, 20);
+
+  /// Returns whether `U` is set.
+  int u(int instruction) => uint32.get(instruction, 21);
+
+  /// Returns ???.
+  int rs(int instruction) => uint32.range(instruction, 11, 8);
+
+  /// Returns ???.
+  int rm(int instruction) => uint32.range(instruction, 3, 0);
 }
 
 /// Instruction format for Single Data Swap.
@@ -125,10 +170,22 @@ class MultiplyLong extends Arm7TdmiInstructionFormat {
 /// 3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 9 8 7 6 5 4 3 2 1 0
 /// 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
 /// ---------------------------------------------------------------
-/// Cond*** 0 0 0 1 0 B 0 0 Rn***** Rd***** 0 0 0 0 1 0 0 1 Rn*****
+/// Cond*** 0 0 0 1 0 B 0 0 Rn***** Rd***** 0 0 0 0 1 0 0 1 Rm*****
 /// ```
 class SingleDataSwap extends Arm7TdmiInstructionFormat {
   const SingleDataSwap() : super._(0x109);
+
+  /// Returns ???.
+  int b(int instruction) => uint32.get(instruction, 22);
+
+  /// Returns what register to read from.
+  int rn(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns what register to read from.
+  int rd(int instruction) => uint32.range(instruction, 15, 12);
+
+  /// Returns ???.
+  int rm(int instruction) => uint32.range(instruction, 3, 0);
 }
 
 /// Instruction format for Branch and Exchange.
@@ -141,6 +198,9 @@ class SingleDataSwap extends Arm7TdmiInstructionFormat {
 /// ```
 class BrandAndExchange extends Arm7TdmiInstructionFormat {
   const BrandAndExchange() : super._(0x121);
+
+  /// Returns what register to read from.
+  int rn(int instruction) => uint32.range(instruction, 3, 0);
 }
 
 /// Instruction format for Half-word Data Transfer: Register offset.
@@ -153,6 +213,33 @@ class BrandAndExchange extends Arm7TdmiInstructionFormat {
 /// ```
 class HalfWordDataTransferRegisterOffset extends Arm7TdmiInstructionFormat {
   const HalfWordDataTransferRegisterOffset() : super._(0x00B);
+
+  /// Returns ???.
+  int p(int instruction) => uint32.get(instruction, 24);
+
+  /// Returns ???.
+  int u(int instruction) => uint32.get(instruction, 23);
+
+  /// Returns ???.
+  int w(int instruction) => uint32.get(instruction, 21);
+
+  /// Returns ???.
+  int l(int instruction) => uint32.get(instruction, 20);
+
+  /// Returns ???.
+  int rn(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns ???.
+  int rd(int instruction) => uint32.range(instruction, 15, 12);
+
+  /// Returns ???.
+  int s(int instruction) => uint32.get(instruction, 6);
+
+  /// Returns ???.
+  int h(int instruction) => uint32.get(instruction, 5);
+
+  /// Returns ???.
+  int rm(int instruction) => uint32.range(instruction, 3, 0);
 }
 
 /// Instruction format for Half-word Data Transfer: Immediate offset.
@@ -165,6 +252,33 @@ class HalfWordDataTransferRegisterOffset extends Arm7TdmiInstructionFormat {
 /// ```
 class HalfWordDataTransferImmediateOffset extends Arm7TdmiInstructionFormat {
   const HalfWordDataTransferImmediateOffset() : super._(0x04B);
+
+  /// Returns ???.
+  int p(int instruction) => uint32.get(instruction, 24);
+
+  /// Returns ???.
+  int u(int instruction) => uint32.get(instruction, 23);
+
+  /// Returns ???.
+  int w(int instruction) => uint32.get(instruction, 21);
+
+  /// Returns ???.
+  int l(int instruction) => uint32.get(instruction, 20);
+
+  /// Returns ???.
+  int rn(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns ???.
+  int rd(int instruction) => uint32.range(instruction, 15, 12);
+
+  /// Returns ???.
+  int s(int instruction) => uint32.get(instruction, 6);
+
+  /// Returns ???.
+  int h(int instruction) => uint32.get(instruction, 5);
+
+  /// Returns ???.
+  int offset(int instruction) => uint32.range(instruction, 3, 0);
 }
 
 /// Instruction format for Single Data Transfer.
@@ -177,6 +291,33 @@ class HalfWordDataTransferImmediateOffset extends Arm7TdmiInstructionFormat {
 /// ```
 class SingleDataTransfer extends Arm7TdmiInstructionFormat {
   const SingleDataTransfer() : super._(0x600);
+
+  /// Returns ???.
+  int i(int instruction) => uint32.get(instruction, 25);
+
+  /// Returns ???.
+  int p(int instruction) => uint32.get(instruction, 24);
+
+  /// Returns ???.
+  int u(int instruction) => uint32.get(instruction, 23);
+
+  /// Returns ???.
+  int b(int instruction) => uint32.get(instruction, 22);
+
+  /// Returns ???.
+  int w(int instruction) => uint32.get(instruction, 21);
+
+  /// Returns ???.
+  int l(int instruction) => uint32.get(instruction, 20);
+
+  /// Returns ???.
+  int rn(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns ???.
+  int rd(int instruction) => uint32.range(instruction, 15, 12);
+
+  /// Returns ???.
+  int offset(int instruction) => uint32.range(instruction, 11, 0);
 }
 
 /// Instruction format for Undefined.
@@ -201,6 +342,27 @@ class Undefined extends Arm7TdmiInstructionFormat {
 /// ```
 class BlockDataTransfer extends Arm7TdmiInstructionFormat {
   const BlockDataTransfer() : super._(0x800);
+
+  /// Returns ???.
+  int p(int instruction) => uint32.get(instruction, 24);
+
+  /// Returns ???.
+  int u(int instruction) => uint32.get(instruction, 23);
+
+  /// Returns ???.
+  int s(int instruction) => uint32.get(instruction, 22);
+
+  /// Returns ???.
+  int w(int instruction) => uint32.get(instruction, 21);
+
+  /// Returns ???.
+  int l(int instruction) => uint32.get(instruction, 20);
+
+  /// Returns ???.
+  int rn(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns ???.
+  int registerList(int instruction) => uint32.range(instruction, 15, 0);
 }
 
 /// Instruction format for Branch.
@@ -213,6 +375,12 @@ class BlockDataTransfer extends Arm7TdmiInstructionFormat {
 /// ```
 class Branch extends Arm7TdmiInstructionFormat {
   const Branch() : super._(0xA00);
+
+  /// Returns ???.
+  int l(int instruction) => uint32.get(instruction, 24);
+
+  /// Returns ???.
+  int registerList(int instruction) => uint32.range(instruction, 23, 0);
 }
 
 /// Instruction format for Coprocessor Data Transfer.
@@ -225,6 +393,33 @@ class Branch extends Arm7TdmiInstructionFormat {
 /// ```
 class CoprocessorDataTransfer extends Arm7TdmiInstructionFormat {
   const CoprocessorDataTransfer() : super._(0xC00);
+
+  /// Returns ???.
+  int p(int instruction) => uint32.get(instruction, 24);
+
+  /// Returns ???.
+  int u(int instruction) => uint32.get(instruction, 23);
+
+  /// Returns ???.
+  int n(int instruction) => uint32.get(instruction, 22);
+
+  /// Returns ???.
+  int w(int instruction) => uint32.get(instruction, 21);
+
+  /// Returns ???.
+  int l(int instruction) => uint32.get(instruction, 20);
+
+  /// Returns ???.
+  int rn(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns ???.
+  int crD(int instruction) => uint32.range(instruction, 15, 12);
+
+  /// Returns ???.
+  int cpP(int instruction) => uint32.range(instruction, 11, 8);
+
+  /// Returns ???.
+  int offset(int instruction) => uint32.range(instruction, 7, 0);
 }
 
 /// Instruction format for Coprocessor Data Operation.
@@ -237,6 +432,24 @@ class CoprocessorDataTransfer extends Arm7TdmiInstructionFormat {
 /// ```
 class CoprocessorDataOperation extends Arm7TdmiInstructionFormat {
   const CoprocessorDataOperation() : super._(0xE00);
+
+  /// Returns ???.
+  int cpOpc(int instruction) => uint32.range(instruction, 23, 20);
+
+  /// Returns ???.
+  int crN(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns ???.
+  int crD(int instruction) => uint32.range(instruction, 15, 12);
+
+  /// Returns ???.
+  int cpP(int instruction) => uint32.range(instruction, 11, 8);
+
+  /// Returns ???.
+  int cp(int instruction) => uint32.range(instruction, 7, 5);
+
+  /// Returns ???.
+  int crM(int instruction) => uint32.range(instruction, 3, 0);
 }
 
 /// Instruction format for Coprocessor Register Transfer.
@@ -249,6 +462,27 @@ class CoprocessorDataOperation extends Arm7TdmiInstructionFormat {
 /// ```
 class CoprocessorRegisterTransfer extends Arm7TdmiInstructionFormat {
   const CoprocessorRegisterTransfer() : super._(0xE00);
+
+  /// Returns ???.
+  int cpOpc(int instruction) => uint32.range(instruction, 23, 21);
+
+  /// Returns ???.
+  int l(int instruction) => uint32.get(instruction, 20);
+
+  /// Returns ???.
+  int crN(int instruction) => uint32.range(instruction, 19, 16);
+
+  /// Returns ???.
+  int rd(int instruction) => uint32.range(instruction, 15, 12);
+
+  /// Returns ???.
+  int cpP(int instruction) => uint32.range(instruction, 11, 8);
+
+  /// Returns ???.
+  int cp(int instruction) => uint32.range(instruction, 7, 5);
+
+  /// Returns ???.
+  int crM(int instruction) => uint32.range(instruction, 3, 0);
 }
 
 /// Instruction format for Software Interrupt.
