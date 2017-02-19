@@ -18,6 +18,9 @@ class CartridgeHeaderReader extends Memory with UnwriteableMemory {
   /// Size: 4bytes
   int get entryPoint => read32(0);
 
+  /// Whether this is "valid ROM", for whatever reason.
+  bool get isValidRom => read8(0xB2) == 0x96;
+
   /// Verifies that the header contains the valid nintendo logo bitmap.
   bool get hasValidNintendoLogo => const ListEquality().equals(
         nintendoLogo,
