@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:arm7_tdmi/arm7_tdmi.dart';
 import 'package:gba/src/cartridge/header.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
@@ -38,34 +37,6 @@ void main() {
 
     test('should have some magic byte set', () {
       expect(reader.isValidRom, isTrue);
-    });
-
-    // TODO: Move this to separate test.
-    test('should be able to decode some instructions', () {
-      // Should recognize this as a branch instruction.
-      final entryPoint = reader.entryPoint;
-      final format = new Arm7TdmiInstructionFormat.decoded(entryPoint);
-      expect(format, const isInstanceOf<Branch>());
-
-      final decoder = const Arm7TdmiDecoder();
-      var immediate = const Branch().offset(entryPoint);
-      immediate <<= 2;
-      print(immediate);
-
-      final actualProgram = new Uint32List.view(
-        gbaFileBytes.buffer,
-        immediate,
-      );
-      actualProgram
-          .map((i) {
-            try {
-              return new Arm7TdmiInstructionFormat.decoded(i).runtimeType;
-            } catch (_) {
-              return '--- ERROR ---: $i';
-            }
-          })
-          .where((i) => i != null)
-          .forEach(print);
     });
   });
 }
