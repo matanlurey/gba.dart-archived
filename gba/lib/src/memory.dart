@@ -15,45 +15,6 @@ class MemoryManager {
     return const Resource('package:gba/bios.bin').readAsBytes();
   }
 
-  // 16kb.
-  static const _ramSizeBios = 0x4000;
-
-  // 256kb.
-  static const _ramSizeWork = 0x40000;
-
-  // 32kb.
-  static const _ramSizeInternal = 0x8000;
-
-  // 1kb.
-  static const _ramSizeIO = 0x400;
-
-  // 1kb.
-  static const _ramSizePalette = 0x400;
-
-  // 96kb.
-  static const _ramSizeVideo = 0x20000;
-
-  // 1kb.
-  static const _ramSizeObject = 0x400;
-
-  static const _offsetBios = 0;
-  static const _offsetInternal = _ramSizeBios;
-  static const _offsetWork = _offsetInternal + _ramSizeInternal;
-  static const _offsetVideo = _offsetWork + _ramSizeVideo;
-
-  static const _maskBios = 0x00003FFF;
-  static const _maskWork = 0x0003FFFF;
-  static const _maskInternal = 0x00007FFF;
-  static const _maskVideo = 0x06017FFF;
-
-  static const _totalRamSize = _ramSizeBios +
-      _ramSizeWork +
-      _ramSizeInternal +
-      _ramSizeIO +
-      _ramSizePalette +
-      _ramSizeVideo +
-      _ramSizeObject;
-
   final BiosLoader _biosLoader;
 
   final ByteBuffer _buffer;
@@ -68,12 +29,12 @@ class MemoryManager {
   /// This memory is embedded in the CPU and it's the fastest memory section.
   /// The 32bit bus means that ARM instructions can be loaded at once. This is
   /// available for code and data.
-  final MemoryAccess internal;
+  final MemoryAccess internalWork;
 
   /// Memory location for work.
   ///
   /// Can be used for code and data.
-  final MemoryAccess work;
+  final MemoryAccess externalWork;
 
   /// Video RAM.
   ///
@@ -85,17 +46,17 @@ class MemoryManager {
   /// Memory-mapped IO registers.
   ///
   /// Used to control graphics, sound, buttons and other features.
-  MemoryAccess get io => throw new UnimplementedError();
+  final MemoryAccess io;
 
   /// Memory for two palettes containing 256 entries of 15-bit colors each.
   ///
   /// The first is for backgrounds, the second for sprites.
-  MemoryAccess get palette => throw new UnimplementedError();
+  final MemoryAccess palette;
 
   /// Object Attribute Memory.
   ///
   /// This is where sprites are controlled.
-  MemoryAccess get object => throw new UnimplementedError();
+  final MemoryAccess object;
 
   /// Create a new empty [MemoryManager] unit for the emulator.
   ///
@@ -105,7 +66,7 @@ class MemoryManager {
     bool isBiosProtected(),
   }) {
     return new MemoryManager.fromBuffer(
-      new Uint8List(_totalRamSize).buffer,
+      new Uint8List(0xffffffff).buffer,
       biosLoader: biosLoader,
       isBiosProtected: isBiosProtected,
     );
@@ -119,68 +80,73 @@ class MemoryManager {
     BiosLoader biosLoader: _loadBiosDefault,
     bool isBiosProtected(),
   }) {
-    // Create the views into all available memory with correct lengths/offsets.
-    final viewBios = new Uint8List.view(
-      buffer,
-      _offsetBios,
-      _ramSizeBios,
-    );
-    final viewInternal = new Uint8List.view(
-      buffer,
-      _offsetInternal,
-      _ramSizeInternal,
-    );
-    final viewWork = new Uint8List.view(
-      buffer,
-      _offsetWork,
-      _ramSizeWork,
-    );
-    final viewVideo = new Uint8List.view(
-      buffer,
-      _offsetVideo,
-      _ramSizeVideo,
-    );
+    //
+    // External memory (Game Pak) Omitted for now
+    //
+    final bios = MemoryLayout.bios(buffer);
+    final internalWork = MemoryLayout.internalWork(buffer);
+    final externalWork = MemoryLayout.externalWork(buffer);
+    final io = MemoryLayout.io(buffer);
+    final palette = MemoryLayout.palette(buffer);
+    final video = MemoryLayout.video(buffer);
+    final object = MemoryLayout.object(buffer);
+
     // Create memory access interfaces and finalize the memory manager unit.
-    return new MemoryManager._(
-      buffer,
-      biosLoader,
-      // BIOS: Masked, and has a special protection protocol.
-      bios: new BitwiseAndMemoryMask(
-        _maskBios,
-        new _ProtectedMemory.view(
-          viewBios.buffer,
-          isProtected: isBiosProtected,
+    return new MemoryManager._(buffer, biosLoader,
+        // BIOS: Masked, and has a special protection protocol.
+        bios: new BitwiseAndMemoryMask(
+          bios.end,
+          new _ProtectedMemory.view(bios.bytes, isProtected: isBiosProtected),
         ),
-      ),
-      // Internal: Masked.
-      internal: new BitwiseAndMemoryMask(
-        _maskInternal,
-        new Memory.view(viewInternal.buffer),
-      ),
-      // Video: Masked.
-      video: new BitwiseAndMemoryMask(
-          _maskVideo, new Memory.view(viewVideo.buffer)),
-      // Working: Masked.
-      work: new BitwiseAndMemoryMask(
-        _maskWork,
-        new Memory.view(viewWork.buffer),
-      ),
-    );
+        // Internal: Masked.
+        internalWork: new BitwiseAndMemoryMask(
+          internalWork.end,
+          new Memory.view(internalWork.bytes),
+        ),
+        // Working: Masked.
+        externalWork: new BitwiseAndMemoryMask(
+          externalWork.end,
+          new Memory.view(externalWork.bytes),
+        ),
+        // IO: Masked
+        io: new BitwiseAndMemoryMask(
+          io.end,
+          new Memory.view(io.bytes),
+        ),
+        // Palette: Masked
+        palette: new BitwiseAndMemoryMask(
+          palette.end,
+          new Memory.view(palette.bytes),
+        ),
+        // Video: Masked.
+        video: new BitwiseAndMemoryMask(
+          video.end,
+          new Memory.view(video.bytes),
+        ),
+        // Object attributes: Masked
+        object: new BitwiseAndMemoryMask(
+          object.end,
+          new Memory.view(object.bytes),
+        ));
   }
 
   MemoryManager._(
     this._buffer,
     this._biosLoader, {
     @required this.bios,
-    @required this.internal,
-    @required this.work,
+    @required this.internalWork,
+    @required this.externalWork,
+    @required this.io,
+    @required this.palette,
     @required this.video,
+    @required this.object,
   });
 
   /// Loads the BIOS returning a future that completes when done.
   Future<Null> loadBios() async {
+    var biosBlock = MemoryLayout.bios(_buffer);
     _buffer
-        .asUint8List(_offsetBios, _ramSizeBios)
+        .asUint8List(biosBlock.start, biosBlock.length)
         .setAll(0, await _biosLoader());
   }
 
@@ -234,4 +200,75 @@ class _ProtectedMemory extends Memory with UnwriteableMemory {
     }
     return super.read32(address);
   }
+}
+
+class MemoryBlock {
+  final int start;
+  final int end;
+  final ByteBuffer _buffer;
+
+  const MemoryBlock(this._buffer, this.start, this.end);
+
+  int get length => (end - start) ~/ 8;
+
+  ByteBuffer get bytes => new Uint8List.view(_buffer, start, length).buffer;
+}
+
+abstract class MemoryLayout {
+  //
+  // General internal memory blocks
+  //
+
+  // 16kb.
+  static MemoryBlock bios(ByteBuffer b) => new MemoryBlock(
+        b,
+        0x0,
+        0x3fff,
+      );
+
+  // 256kb. (a.k.a. on-board work ram)
+  static MemoryBlock internalWork(ByteBuffer b) => new MemoryBlock(
+        b,
+        0x2000000,
+        0x203ffff,
+      );
+
+  // 32kb. (a.k.a. on-chip work ram)
+  static MemoryBlock externalWork(ByteBuffer b) => new MemoryBlock(
+        b,
+        0x3000000,
+        0x3007fff,
+      );
+
+  // 1kb.
+  static MemoryBlock io(ByteBuffer b) => new MemoryBlock(
+        b,
+        0x4000000,
+        0x40003fe,
+      );
+
+  //
+  // Internal display memory blocks
+  //
+
+  // 1kb.
+  static MemoryBlock palette(ByteBuffer b) => new MemoryBlock(
+        b,
+        0x5000000,
+        0x50003ff,
+      );
+
+  // 96kb.
+  static MemoryBlock video(ByteBuffer b) => new MemoryBlock(
+        b,
+        0x6000000,
+        0x6017fff,
+      );
+
+  // 1kb. (a.k.a oam)
+  static MemoryBlock object(ByteBuffer b) => new MemoryBlock(
+        b,
+        0x7000000,
+        0x70003fff,
+      );
 }
