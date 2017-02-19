@@ -80,9 +80,6 @@ class MemoryManager {
     BiosLoader biosLoader: _loadBiosDefault,
     bool isBiosProtected(),
   }) {
-    //
-    // External memory (Game Pak) Omitted for now
-    //
     final bios = MemoryLayout.bios(buffer);
     final internalWork = MemoryLayout.internalWork(buffer);
     final externalWork = MemoryLayout.externalWork(buffer);
@@ -271,4 +268,8 @@ abstract class MemoryLayout {
         0x7000000,
         0x70003fff,
       );
+
+  //
+  // External memory (Game Pak) Omitted for now
+  //
 }
