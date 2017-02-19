@@ -39,7 +39,7 @@ class MemoryManager {
   static const _offsetBios = 0;
   static const _offsetInternal = _ramSizeBios;
   static const _offsetWork = _offsetInternal + _ramSizeInternal;
-  static const _offsetVideo = 0x06000000;
+  static const _offsetVideo = _offsetWork + _ramSizeVideo;
 
   static const _maskBios = 0x00003FFF;
   static const _maskWork = 0x0003FFFF;
