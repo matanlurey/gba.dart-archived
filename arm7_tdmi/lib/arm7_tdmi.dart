@@ -1,6 +1,8 @@
 /// An emulator for the ARM7-TDMI processor.
 library arm7_tdmi;
 
+export 'package:arm7_tdmi/src/compiler.dart'
+    show Arm7TdmiCompiler, Arm7TdmiProgram;
 export 'package:arm7_tdmi/src/condition/arm.dart' show Arm7TdmiCondition;
 export 'package:arm7_tdmi/src/decoder.dart'
     show
