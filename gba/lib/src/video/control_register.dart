@@ -37,7 +37,7 @@ abstract class DisplayControlRegister {
   VideoMode get videoMode;
 
   /// Returns true if the loaded cartridge is a GameBoy Color cartridge.
-  bool get isGameBoyColor => !isZero(getBit(_bitGB, _read()));
+  bool get isGameBoyColor => isSet(_bitGB, _read());
 
   /// Returns the page displayed on the screen.
   ///
