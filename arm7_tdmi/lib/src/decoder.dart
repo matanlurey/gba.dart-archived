@@ -5,10 +5,28 @@ import 'package:binary/binary.dart';
 class Arm7TdmiDecoder {
   const Arm7TdmiDecoder();
 
+  const factory Arm7TdmiDecoder.fromMap(
+    Map<int, Arm7TdmiInstruction> instructions,
+  ) = _MapArm7TdmiDecoder;
+
   /// Decodes and compiles [instruction] into a decoded `ARM` instruction.
-  /*?*/ decodeArm(int instruction) {
+  Arm7TdmiInstruction decodeArm(int instruction) {
     final format = new Arm7TdmiInstructionFormat.decoded(instruction);
     assert(format != null);
+    return format.decode(instruction);
+  }
+}
+
+class _MapArm7TdmiDecoder implements Arm7TdmiDecoder {
+  final Map<int, Arm7TdmiInstruction> _instructions;
+
+  const _MapArm7TdmiDecoder(this._instructions);
+
+  @override
+  Arm7TdmiInstruction decodeArm(int instruction) {
+    final decoded = _instructions[instruction];
+    assert(decoded != null);
+    return decoded;
   }
 }
 
