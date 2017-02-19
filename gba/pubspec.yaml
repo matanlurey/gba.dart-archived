@@ -12,6 +12,7 @@ environment:
 
 dependencies:
   func: '^0.1.1'
+  resource: '^2.0.0'
 
 # Required for development. When we publish to pub, we'll comment this out.
 dependency_overrides:
