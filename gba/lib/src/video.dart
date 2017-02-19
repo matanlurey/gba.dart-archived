@@ -2,7 +2,6 @@ import 'package:binary/binary.dart';
 import 'package:func/func.dart';
 import 'package:meta/meta.dart';
 
-
 class VideoMode {}
 
 /// A 16-bit register functioning as the primary control of the GBA screen.
@@ -28,7 +27,9 @@ abstract class DisplayControlRegister {
   DisplayControlRegister({
     @required int read(),
     @required void write(int value),
-  }) : _read = read, _write = write;
+  })
+      : _read = read,
+        _write = write;
 
   /// The current video mode.
   ///
@@ -95,4 +96,3 @@ abstract class DisplayControlRegister {
     _write(setBit(_bitObj, _read()));
   }
 }
-
