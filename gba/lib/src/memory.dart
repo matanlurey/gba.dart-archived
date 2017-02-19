@@ -93,37 +93,40 @@ class MemoryManager {
         // BIOS: Masked, and has a special protection protocol.
         bios: new BitwiseAndMemoryMask(
           bios.end,
-          new _ProtectedMemory.view(bios.bytes, isProtected: isBiosProtected),
+          new _ProtectedMemory.view(
+            bios.bytes.buffer,
+            isProtected: isBiosProtected,
+          ),
         ),
-        // Internal: Masked.
+        // Internal: Masked.s
         internalWork: new BitwiseAndMemoryMask(
           internalWork.end,
-          new Memory.view(internalWork.bytes),
+          new Memory.view(internalWork.bytes.buffer),
         ),
         // Working: Masked.
         externalWork: new BitwiseAndMemoryMask(
           externalWork.end,
-          new Memory.view(externalWork.bytes),
+          new Memory.view(externalWork.bytes.buffer),
         ),
         // IO: Masked
         io: new BitwiseAndMemoryMask(
           io.end,
-          new Memory.view(io.bytes),
+          new Memory.view(io.bytes.buffer),
         ),
         // Palette: Masked
         palette: new BitwiseAndMemoryMask(
           palette.end,
-          new Memory.view(palette.bytes),
+          new Memory.view(palette.bytes.buffer),
         ),
         // Video: Masked.
         video: new BitwiseAndMemoryMask(
           video.end,
-          new Memory.view(video.bytes),
+          new Memory.view(video.bytes.buffer),
         ),
         // Object attributes: Masked
         object: new BitwiseAndMemoryMask(
           object.end,
-          new Memory.view(object.bytes),
+          new Memory.view(object.bytes.buffer),
         ));
   }
 
@@ -202,14 +205,14 @@ class _ProtectedMemory extends Memory with UnwriteableMemory {
 class MemoryBlock {
   final int start;
   final int end;
-  final ByteBuffer _buffer;
+  final Uint8List _bytes;
 
-  const MemoryBlock(this._buffer, this.start, this.end);
+  MemoryBlock(ByteBuffer buffer, this.start, this.end)
+      : _bytes = buffer.asUint8List(start, end - start);
 
-  ByteBuffer get bytes =>
-      new Uint8List.view(_buffer, start, lengthInBytes).buffer;
+  Uint8List get bytes => _bytes;
 
-  int get lengthInBytes => (end - start) ~/ 8;
+  int get lengthInBytes => _bytes.lengthInBytes;
 }
 
 abstract class MemoryLayout {
