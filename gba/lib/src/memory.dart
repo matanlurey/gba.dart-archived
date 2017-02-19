@@ -143,7 +143,7 @@ class MemoryManager {
   Future<Null> loadBios() async {
     var biosBlock = MemoryLayout.bios(_buffer);
     _buffer
-        .asUint8List(biosBlock.start, biosBlock.length)
+        .asUint8List(biosBlock.start, biosBlock.lengthInBytes)
         .setAll(0, await _biosLoader());
   }
 
@@ -206,9 +206,10 @@ class MemoryBlock {
 
   const MemoryBlock(this._buffer, this.start, this.end);
 
-  int get length => bytes.lengthInBytes;
+  ByteBuffer get bytes =>
+      new Uint8List.view(_buffer, start, lengthInBytes).buffer;
 
-  ByteBuffer get bytes => new Uint8List.view(_buffer, start, length).buffer;
+  int get lengthInBytes => (end - start) ~/ 8;
 }
 
 abstract class MemoryLayout {
