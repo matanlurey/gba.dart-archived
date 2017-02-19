@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:arm7_tdmi/arm7_tdmi.dart';
+import 'package:meta/meta.dart';
 
 /// ARM7TDMI register set which is available in each mode.
 ///
@@ -39,11 +40,27 @@ import 'package:arm7_tdmi/arm7_tdmi.dart';
 /// -----------------------------------------------------------------------
 /// ```
 class Arm7TdmiRegisters {
-  // Stack pointer index.
+  static const _fiqViewOffset = 17;
+  static const _fiqViewLength = 7;
+  static const _svcViewOffset = _fiqViewOffset + _fiqViewLength;
+  static const _svcViewLength = 3;
+  static const _abtViewOffset = _svcViewOffset + _svcViewLength;
+  static const _abtViewLength = 3;
+  static const _irqViewOffset = _abtViewOffset + _abtViewLength;
+  static const _irqViewLength = 3;
+  static const _undViewOffset = _irqViewOffset + _irqViewLength;
+  static const _undViewLength = 3;
+
+  /// Stack pointer index.
+  @visibleForTesting
   static const SP = 13;
-  // Link register index.
+
+  /// Link register index.
+  @visibleForTesting
   static const LR = 14;
-  // Program counter index.
+
+  /// Program counter index.
+  @visibleForTesting
   static const PC = 15;
 
   static const _totalRegisters = 37;
@@ -100,36 +117,36 @@ class Arm7TdmiRegisters {
         // 17 -> 23, plus 24 for the SPSR_fiq (7 registers).
         _fiqView = new Uint32List.view(
           registers.buffer,
-          17 * Uint32List.BYTES_PER_ELEMENT,
-          7 * Uint32List.BYTES_PER_ELEMENT,
+          _fiqViewOffset * Uint32List.BYTES_PER_ELEMENT,
+          _fiqViewLength * Uint32List.BYTES_PER_ELEMENT,
         ),
 
         // 25 -> 26, plus 27 for the SPSR_svc (3 registers).
         _svcView = new Uint32List.view(
           registers.buffer,
-          (17 + 7) * Uint32List.BYTES_PER_ELEMENT,
-          3 * Uint32List.BYTES_PER_ELEMENT,
+          _svcViewOffset * Uint32List.BYTES_PER_ELEMENT,
+          _svcViewLength * Uint32List.BYTES_PER_ELEMENT,
         ),
 
         // 28 -> 29, plus 30 for the SPSR_abt (3 registers).
         _abtView = new Uint32List.view(
           registers.buffer,
-          (17 + 7 + 3) * Uint32List.BYTES_PER_ELEMENT,
-          3 * Uint32List.BYTES_PER_ELEMENT,
+          _abtViewOffset * Uint32List.BYTES_PER_ELEMENT,
+          _abtViewLength * Uint32List.BYTES_PER_ELEMENT,
         ),
 
         // 30 -> 32, plus 33 for the SPSR_irq (3 registers).
         _irqView = new Uint32List.view(
           registers.buffer,
-          (17 + 7 + 3 + 3) * Uint32List.BYTES_PER_ELEMENT,
-          3 * Uint32List.BYTES_PER_ELEMENT,
+          _irqViewOffset * Uint32List.BYTES_PER_ELEMENT,
+          _irqViewLength * Uint32List.BYTES_PER_ELEMENT,
         ),
 
         // 34 -> 35, plus 36 for the SPSR_svc (3 registers).
         _undView = new Uint32List.view(
           registers.buffer,
-          (17 + 7 + 3 + 3 + 3) * Uint32List.BYTES_PER_ELEMENT,
-          3 * Uint32List.BYTES_PER_ELEMENT,
+          _undViewOffset * Uint32List.BYTES_PER_ELEMENT,
+          _undViewLength * Uint32List.BYTES_PER_ELEMENT,
         ) {
     assert(() {
       if (_registers.length != _totalRegisters * Uint32List.BYTES_PER_ELEMENT) {

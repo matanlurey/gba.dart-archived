@@ -1,3 +1,11 @@
+## 0.1.0
+
+- Fixed a bug where `int128` and `uint128` only had a length of 64.
+
+## 0.0.4
+
+- Updated the documentation and README.
+
 ## 0.0.3
 
 - Added `isZero`.

@@ -60,5 +60,175 @@ main() {
     ],
   );
 
-  // TODO: Add remaining test cases back for CS -> NV.
+  check(
+    Arm7TdmiCondition.CS,
+    success: [
+      cpsr(c: 1),
+    ],
+    failure: [
+      cpsr(c: 0),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.CC,
+    success: [
+      cpsr(c: 0),
+    ],
+    failure: [
+      cpsr(c: 1),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.MI,
+    success: [
+      cpsr(n: 1),
+    ],
+    failure: [
+      cpsr(n: 0),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.PL,
+    success: [
+      cpsr(n: 0),
+    ],
+    failure: [
+      cpsr(n: 1),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.VS,
+    success: [
+      cpsr(v: 1),
+    ],
+    failure: [
+      cpsr(v: 0),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.VC,
+    success: [
+      cpsr(v: 0),
+    ],
+    failure: [
+      cpsr(v: 1),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.HI,
+    success: [
+      cpsr(c: 1, n: 0),
+    ],
+    failure: [
+      cpsr(c: 1, n: 1),
+      cpsr(c: 0, n: 0),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.LS,
+    success: [
+      cpsr(c: 0, n: 0),
+      cpsr(c: 1, n: 1),
+    ],
+    failure: [
+      cpsr(c: 1, n: 0),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.GE,
+    success: [
+      cpsr(v: 0, n: 0),
+      cpsr(v: 1, n: 1),
+    ],
+    failure: [
+      cpsr(v: 1, n: 0),
+      cpsr(v: 0, n: 1),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.LT,
+    success: [
+      cpsr(v: 1, n: 0),
+      cpsr(v: 0, n: 1),
+    ],
+    failure: [
+      cpsr(v: 0, n: 0),
+      cpsr(v: 1, n: 1),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.GT,
+    success: [
+      cpsr(z: 0, v: 0, n: 0),
+      cpsr(z: 0, v: 1, n: 1),
+    ],
+    failure: [
+      cpsr(z: 1, v: 0, n: 0),
+      cpsr(z: 1, v: 1, n: 1),
+      cpsr(z: 0, v: 0, n: 1),
+      cpsr(z: 0, v: 1, n: 0),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.LE,
+    success: [
+      cpsr(z: 1, v: 0, n: 0),
+      cpsr(z: 1, v: 1, n: 1),
+      cpsr(z: 0, v: 0, n: 1),
+      cpsr(z: 0, v: 1, n: 0),
+    ],
+    failure: [
+      cpsr(z: 0, v: 0, n: 0),
+      cpsr(z: 0, v: 1, n: 1),
+    ],
+  );
+
+  check(
+    Arm7TdmiCondition.AL,
+    success: [
+      cpsr(v: 1, c: 1, z: 1, n: 1),
+      cpsr(v: 0, c: 1, z: 1, n: 1),
+      cpsr(v: 1, c: 0, z: 1, n: 1),
+      cpsr(v: 1, c: 1, z: 0, n: 1),
+      cpsr(v: 1, c: 1, z: 1, n: 0),
+      cpsr(v: 0, c: 0, z: 1, n: 1),
+      cpsr(v: 1, c: 1, z: 0, n: 0),
+      cpsr(v: 1, c: 0, z: 0, n: 0),
+      cpsr(v: 0, c: 1, z: 0, n: 0),
+      cpsr(v: 0, c: 0, z: 1, n: 0),
+      cpsr(v: 0, c: 0, z: 0, n: 1),
+      cpsr(v: 0, c: 0, z: 0, n: 0),
+    ],
+    failure: [],
+  );
+
+  check(
+    Arm7TdmiCondition.NV,
+    success: [],
+    failure: [
+      cpsr(v: 1, c: 1, z: 1, n: 1),
+      cpsr(v: 0, c: 1, z: 1, n: 1),
+      cpsr(v: 1, c: 0, z: 1, n: 1),
+      cpsr(v: 1, c: 1, z: 0, n: 1),
+      cpsr(v: 1, c: 1, z: 1, n: 0),
+      cpsr(v: 0, c: 0, z: 1, n: 1),
+      cpsr(v: 1, c: 1, z: 0, n: 0),
+      cpsr(v: 1, c: 0, z: 0, n: 0),
+      cpsr(v: 0, c: 1, z: 0, n: 0),
+      cpsr(v: 0, c: 0, z: 1, n: 0),
+      cpsr(v: 0, c: 0, z: 0, n: 1),
+      cpsr(v: 0, c: 0, z: 0, n: 0),
+    ],
+  );
 }

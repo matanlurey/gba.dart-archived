@@ -2,7 +2,10 @@
 
 An emulator for the ARM7/TDMI processor.
 
+[![Pub](https://img.shields.io/pub/v/arm7_tdmi.svg)](https://pub.dartlang.org/packages/arm7_tdmi)
 [![Build Status](https://travis-ci.org/matanlurey/gba.dart.svg?branch=master)](https://travis-ci.org/matanlurey/gba.dart)
+[![Coverage Status](https://coveralls.io/repos/github/matanlurey/gba.dart/badge.svg?branch=master)](https://coveralls.io/github/matanlurey/gba.dart?branch=master)
+[![documentation](https://img.shields.io/badge/Documentation-arm7_tdmi-blue.svg)](https://www.dartdocs.org/documentation/arm7_tdmi/latest)
 
 This project is primarily academic/educational, and prefers idiomatic Dart and
 readability over performance. After completion it should be executable on any
