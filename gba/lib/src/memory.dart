@@ -159,9 +159,7 @@ class MemoryManager {
       ),
       // Video: Masked.
       video: new BitwiseAndMemoryMask(
-        _maskVideo,
-        new Memory.view(viewVideo.buffer)
-      ),
+          _maskVideo, new Memory.view(viewVideo.buffer)),
       // Working: Masked.
       work: new BitwiseAndMemoryMask(
         _maskWork,
