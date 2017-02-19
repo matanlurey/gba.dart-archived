@@ -15,6 +15,6 @@ any code that loads, displays, or otherwise actually runs a ROM.
 
 * `gba_browser`: Embeds the emulator to run in the browser using Canvas/WebGL
 * `gba_flutter`: Embeds the emulator to run on mobile devices using [Flutter][]
-* `gba_server`: Embeds the emulator tu run on the server and streams back
+* `gba_server`: Embeds the emulator to run on the server and stream back
 
 [Flutter]: https://flutter.io
