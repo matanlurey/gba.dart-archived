@@ -206,7 +206,7 @@ class MemoryBlock {
 
   const MemoryBlock(this._buffer, this.start, this.end);
 
-  int get length => (end - start) ~/ 8;
+  int get length => bytes.lengthInBytes;
 
   ByteBuffer get bytes => new Uint8List.view(_buffer, start, length).buffer;
 }
