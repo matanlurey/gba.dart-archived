@@ -270,7 +270,7 @@ abstract class MemoryLayout {
   static MemoryBlock object(ByteBuffer b) => new MemoryBlock(
         b,
         0x7000000,
-        0x70003fff,
+        0x70003ff,
       );
 
   //
