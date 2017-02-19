@@ -1,11 +1,20 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:arm7_tdmi/arm7_tdmi.dart';
 import 'package:func/func.dart';
 import 'package:meta/meta.dart';
+import 'package:resource/resource.dart';
+
+/// Function signature for a function that asynchronously loads a BIOS.
+typedef Future<List<int>> BiosLoader();
 
 /// Access into all of the RAM for the emulator.
 class MemoryManager {
+  static Future<List<int>> _loadBiosDefault() {
+    return const Resource('package:gba/bios.bin').readAsBytes();
+  }
+
   // 16kb.
   static const _ramSizeBios = 0x4000;
 
@@ -27,6 +36,10 @@ class MemoryManager {
   // 1kb.
   static const _ramSizeObject = 0x400;
 
+  static const _offsetBios = 0;
+  static const _offsetInternal = _ramSizeBios;
+  static const _offsetWork = _offsetInternal + _ramSizeInternal;
+
   static const _maskBios = 0x00003FFF;
   static const _maskWork = 0x0003FFFF;
   static const _maskInternal = 0x00007FFF;
@@ -38,6 +51,8 @@ class MemoryManager {
       _ramSizePalette +
       _ramSizeVideo +
       _ramSizeObject;
+
+  final BiosLoader _biosLoader;
 
   final ByteBuffer _buffer;
 
@@ -84,10 +99,12 @@ class MemoryManager {
   ///
   /// May optionally specify [isBiosProtected] to conditionally protect [bios].
   factory MemoryManager({
+    BiosLoader biosLoader: _loadBiosDefault,
     bool isBiosProtected(),
   }) {
     return new MemoryManager.fromBuffer(
       new Uint8List(_totalRamSize).buffer,
+      biosLoader: biosLoader,
       isBiosProtected: isBiosProtected,
     );
   }
@@ -97,27 +114,29 @@ class MemoryManager {
   /// May optionally specify [isBiosProtected] to conditionally protect [bios].
   factory MemoryManager.fromBuffer(
     ByteBuffer buffer, {
+    BiosLoader biosLoader: _loadBiosDefault,
     bool isBiosProtected(),
   }) {
     // Create the views into all available memory with correct lengths/offsets.
     final viewBios = new Uint8List.view(
       buffer,
-      0,
+      _offsetBios,
       _ramSizeBios,
     );
     final viewInternal = new Uint8List.view(
       buffer,
-      _ramSizeBios,
+      _offsetInternal,
       _ramSizeInternal,
     );
     final viewWork = new Uint8List.view(
       buffer,
-      _ramSizeBios + _ramSizeInternal,
+      _offsetWork,
       _ramSizeWork,
     );
     // Create memory access interfaces and finalize the memory manager unit.
     return new MemoryManager._(
       buffer,
+      biosLoader,
       // BIOS: Masked, and has a special protection protocol.
       bios: new BitwiseAndMemoryMask(
         _maskBios,
@@ -140,11 +159,19 @@ class MemoryManager {
   }
 
   MemoryManager._(
-    this._buffer, {
+    this._buffer,
+    this._biosLoader, {
     @required this.bios,
     @required this.internal,
     @required this.work,
   });
+
+  /// Loads the BIOS returning a future that completes when done.
+  Future<Null> loadBios() async {
+    _buffer
+        .asUint8List(_offsetBios, _ramSizeBios)
+        .setAll(0, await _biosLoader());
+  }
 
   /// Returns a *copy* of all memory as a buffer, perhaps for serialization.
   Uint8List toFixedList() => new Uint8List.fromList(_buffer.asUint8List());
@@ -168,9 +195,9 @@ class _ProtectedMemory extends Memory with WriteOnlyMemory {
   /// conditionally enable or disable reading from this location as well.
   _ProtectedMemory.view(
     ByteBuffer buffer, {
-    bool isProtected() = _noProtection,
+    bool isProtected(),
   })
-      : _isProtected = isProtected,
+      : _isProtected = isProtected ?? _noProtection,
         super.view(buffer);
 
   @override
