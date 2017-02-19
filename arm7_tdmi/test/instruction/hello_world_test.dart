@@ -26,10 +26,9 @@ void main() {
     ];
 
     program.forEach((instructionParts) {
-      var bits = instructionParts.last;
-      var format = new Arm7TdmiInstructionFormat.decoded(bits);
+      var bits = instructionParts.last as int;
       var instruction = instructionParts.first as Arm7TdmiInstruction;
-      instruction.execute(cpu, format, bits);
+      instruction.interpret(cpu, bits);
     });
 
     // TODO(kjharland): change to helloWorld after instructions are implemented.

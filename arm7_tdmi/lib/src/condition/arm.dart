@@ -52,7 +52,16 @@ abstract class Arm7TdmiCondition {
   final String description;
 
   /// Returns a condition by decoding [value].
-  factory Arm7TdmiCondition.decode(int value) => _byCode[value];
+  factory Arm7TdmiCondition.decode(int value) {
+    final result = _byCode[value];
+    assert(() {
+      if (result == null) {
+        throw new FormatException('Could not decode ($value)', value);
+      }
+      return true;
+    });
+    return result;
+  }
 
   const Arm7TdmiCondition._({
     @required this.code,
