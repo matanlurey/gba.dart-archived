@@ -513,7 +513,7 @@ class Branch extends Arm7TdmiInstructionFormat {
   int l(int instruction) => uint32.get(instruction, 24);
 
   /// Returns ???.
-  int registerList(int instruction) => uint32.range(instruction, 23, 0);
+  int offset(int instruction) => uint32.range(instruction, 23, 0);
 }
 
 /// Instruction format for Coprocessor Data Transfer.
