@@ -93,6 +93,6 @@ abstract class DisplayControlRegister {
 
   /// Enables the object window.
   void enableObjectWindow() {
-    _write(setBit(_bitObj, _read()));
+    _write(setBit(_bitOW, _read()));
   }
 }
