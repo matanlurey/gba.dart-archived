@@ -14,15 +14,7 @@ class DisplayStatusRegister {
   // Reads from memory.
   final Func0<int> _read;
 
-  // Writes to memory.
-  final VoidFunc1<int> _write;
-
-  DisplayStatusRegister({
-    @required int read(),
-    @required void write(int value),
-  })
-      : _read = read,
-        _write = write;
+  DisplayStatusRegister({@required int read()}) : _read = read;
 
   /// Whether the display is in the vblank phase.
   ///
