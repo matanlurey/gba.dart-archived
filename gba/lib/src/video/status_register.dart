@@ -9,7 +9,7 @@ class DisplayStatusRegister {
   static const _bitVcS = 2;
   static const _bitVbI = 3;
   static const _bitHbI = 4;
-  static const _bitVcI = 4;
+  static const _bitVcI = 5;
 
   // Reads from memory.
   final Func0<int> _read;
