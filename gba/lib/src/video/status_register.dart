@@ -19,28 +19,28 @@ class DisplayStatusRegister {
   /// Whether the display is in the vblank phase.
   ///
   /// The vblank phase takes place after the vdraw phase and involves writing 68
-  /// 68 blank scanlines in the memory regions outside the maximum vertical
-  /// display range.
-  bool get isVBlank => isSet(_bitVbS, _read());
+  /// blank scanlines in the memory regions outside the maximum vertical display
+  /// range.
+  bool get isVBlank => isSet(_read(), _bitVbS);
 
   /// Whether the display is in the hblank phase.
   ///
   /// The hblank phase takes place after the hdraw phase and involves writing 68
-  /// 68 blank columns in the memory regions outside the maximum horizontal
-  /// display range.
-  bool get isHBlank => isSet(_bitHbS, _read());
+  /// blank columns in the memory regions outside the maximum horizontal display
+  /// range.
+  bool get isHBlank => isSet( _read(),_bitHbS);
 
   /// Whether the current scanline matches the the scanline trigger.
-  bool get isVCountTrigger => isSet(_bitVcS, _read());
+  bool get isVCountTrigger => isSet(_read(), _bitVcS);
 
   /// Whether an interrupt will be fired at vblank.
-  bool get isVBlankInterruptRequestSet => isSet(_bitVbI, _read());
+  bool get isVBlankInterruptRequestSet => isSet(_read(), _bitVbI);
 
   /// Whether an interrupt will be fired at hblank.
-  bool get isHBlankInterruptRequestSet => isSet(_bitHbI, _read());
+  bool get isHBlankInterruptRequestSet => isSet(_read(), _bitHbI);
 
   /// Whether an interrupt will be fired at when [isVCountTrigger] becomes true.
-  bool get isVCountInterruptRequestSet => isSet(_bitVcI, _read());
+  bool get isVCountInterruptRequestSet => isSet(_read(), _bitVcI);
 
   /// VCount trigger value.
   ///
