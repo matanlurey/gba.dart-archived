@@ -10,10 +10,11 @@ void main() {
         expect(register.lineNumber, line);
       }
 
-      // For lines < 2^8 - 1
+      // For lines <= 2^8 - 1
       expectLine(new ScanlineRegister(read: () => 0x0), 0);
       expectLine(new ScanlineRegister(read: () => 0x64), 100);
       expectLine(new ScanlineRegister(read: () => 0xFF), 255);
+      // For lines > 2^8 - 1
       expectLine(new ScanlineRegister(read: () => 0xFFF), 255);
     });
   });
