@@ -1,4 +1,3 @@
-import 'package:binary/binary.dart';
 import 'package:gba/src/video/status_register.dart';
 import 'package:test/test.dart';
 
