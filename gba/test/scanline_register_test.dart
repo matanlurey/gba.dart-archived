@@ -3,8 +3,6 @@ import 'package:test/test.dart';
 
 void main() {
   group('$ScanlineRegister', () {
-    ScanlineRegister register;
-
     test('lineNumber should return the correct 8-bit line number', () {
       void expectLine(ScanlineRegister register, int line) {
         expect(register.lineNumber, line);
