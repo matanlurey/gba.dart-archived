@@ -15,7 +15,7 @@ void main() {
       register = null;
     });
 
-    test('isVBlank should return true iff bit 0 is set',() {
+    test('isVBlank should return true iff bit 0 is set', () {
       commonSetUp(0);
       expect(register.isVBlank, isFalse);
       commonSetUp(1);
@@ -28,7 +28,7 @@ void main() {
       commonSetUp(2);
       expect(register.isHBlank, isTrue);
     });
-    
+
     test('isVCountTrigger should return true iff bit 2 is set', () {
       commonSetUp(3);
       expect(register.isVCountTrigger, isFalse);
@@ -49,7 +49,7 @@ void main() {
       commonSetUp(16);
       expect(register.isHBlankInterruptRequestSet, isTrue);
     });
-    
+
     test('isVCountInterruptRequestSet should return true iff bit 5 is set', () {
       commonSetUp(31);
       expect(register.isVCountInterruptRequestSet, isFalse);

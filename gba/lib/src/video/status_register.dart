@@ -28,7 +28,7 @@ class DisplayStatusRegister {
   /// The hblank phase takes place after the hdraw phase and involves writing 68
   /// blank columns in the memory regions outside the maximum horizontal display
   /// range.
-  bool get isHBlank => isSet( _read(),_bitHbS);
+  bool get isHBlank => isSet(_read(), _bitHbS);
 
   /// Whether the current scanline matches the the scanline trigger.
   bool get isVCountTrigger => isSet(_read(), _bitVcS);
