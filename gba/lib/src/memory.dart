@@ -11,6 +11,9 @@ typedef Future<List<int>> BiosLoader();
 
 /// Access into all of the RAM for the emulator.
 class MemoryManager {
+  /// Total size of GBA memory map, including unused areas.
+  static const numAddresses = 0xffffffff;
+
   static Future<List<int>> _loadBiosDefault() {
     return const Resource('package:gba/bios.bin').readAsBytes();
   }
@@ -66,7 +69,7 @@ class MemoryManager {
     bool isBiosProtected(),
   }) {
     return new MemoryManager.fromBuffer(
-      new Uint8List(0xffffffff).buffer,
+      new Uint8List(numAddresses).buffer,
       biosLoader: biosLoader,
       isBiosProtected: isBiosProtected,
     );
@@ -80,13 +83,16 @@ class MemoryManager {
     BiosLoader biosLoader: _loadBiosDefault,
     bool isBiosProtected(),
   }) {
-    final bios = MemoryLayout.bios(buffer);
-    final internalWork = MemoryLayout.internalWork(buffer);
-    final externalWork = MemoryLayout.externalWork(buffer);
-    final io = MemoryLayout.io(buffer);
-    final palette = MemoryLayout.palette(buffer);
-    final video = MemoryLayout.video(buffer);
-    final object = MemoryLayout.object(buffer);
+    MemoryAccess createMemoryView(
+      ByteBuffer buffer,
+      MemoryBlock block,
+    ) =>
+        new BitwiseAndMemoryMask(
+            block.end,
+            new Memory.view(
+                new Uint8List.view(buffer, block.start, block.end).buffer));
+
+    final bios = biosBlock(buffer);
 
     // Create memory access interfaces and finalize the memory manager unit.
     return new MemoryManager._(buffer, biosLoader,
@@ -98,36 +104,12 @@ class MemoryManager {
             isProtected: isBiosProtected,
           ),
         ),
-        // Internal: Masked.s
-        internalWork: new BitwiseAndMemoryMask(
-          internalWork.end,
-          new Memory.view(internalWork.bytes.buffer),
-        ),
-        // Working: Masked.
-        externalWork: new BitwiseAndMemoryMask(
-          externalWork.end,
-          new Memory.view(externalWork.bytes.buffer),
-        ),
-        // IO: Masked
-        io: new BitwiseAndMemoryMask(
-          io.end,
-          new Memory.view(io.bytes.buffer),
-        ),
-        // Palette: Masked
-        palette: new BitwiseAndMemoryMask(
-          palette.end,
-          new Memory.view(palette.bytes.buffer),
-        ),
-        // Video: Masked.
-        video: new BitwiseAndMemoryMask(
-          video.end,
-          new Memory.view(video.bytes.buffer),
-        ),
-        // Object attributes: Masked
-        object: new BitwiseAndMemoryMask(
-          object.end,
-          new Memory.view(object.bytes.buffer),
-        ));
+        internalWork: createMemoryView(buffer, internalWorkBlock(buffer)),
+        externalWork: createMemoryView(buffer, externalWorkBlock(buffer)),
+        io: createMemoryView(buffer, ioBlock(buffer)),
+        palette: createMemoryView(buffer, paletteBlock(buffer)),
+        video: createMemoryView(buffer, videoBlock(buffer)),
+        object: createMemoryView(buffer, objectBlock(buffer)));
   }
 
   MemoryManager._(
@@ -144,9 +126,9 @@ class MemoryManager {
 
   /// Loads the BIOS returning a future that completes when done.
   Future<Null> loadBios() async {
-    var biosBlock = MemoryLayout.bios(_buffer);
+    var block = biosBlock(_buffer);
     _buffer
-        .asUint8List(biosBlock.start, biosBlock.lengthInBytes)
+        .asUint8List(block.start, block.lengthInBytes)
         .setAll(0, await _biosLoader());
   }
 
@@ -202,78 +184,90 @@ class _ProtectedMemory extends Memory with UnwriteableMemory {
   }
 }
 
+/* General internal memory blocks */
+
+/// The [MemoryBlock] representing the bios.
+///
+/// This block is is 16kb.
+MemoryBlock biosBlock(ByteBuffer b) => new MemoryBlock(
+      b,
+      0x0,
+      0x3fff,
+    );
+
+/// The [MemoryBlock] representing the internal or 'on-board' working memory.
+///
+/// This block is 256kb.
+MemoryBlock internalWorkBlock(ByteBuffer b) => new MemoryBlock(
+      b,
+      0x2000000,
+      0x203ffff,
+    );
+
+/// The [MemoryBlock] representing external or 'on-chip' memory.
+///
+/// This block is 32kb.
+MemoryBlock externalWorkBlock(ByteBuffer b) => new MemoryBlock(
+      b,
+      0x3000000,
+      0x3007fff,
+    );
+
+/// The [MemoryBlock] representing io memory.
+///
+/// This block is 1kb.
+MemoryBlock ioBlock(ByteBuffer b) => new MemoryBlock(
+      b,
+      0x4000000,
+      0x40003fe,
+    );
+
+/* Internal display memory blocks */
+
+/// The [MemoryBlock] representing palette memory.
+///
+/// This block is 1kb.
+MemoryBlock paletteBlock(ByteBuffer b) => new MemoryBlock(
+      b,
+      0x5000000,
+      0x50003ff,
+    );
+
+/// The [MemoryBlock] representing video memory.
+///
+/// This block is 96kb.
+MemoryBlock videoBlock(ByteBuffer b) => new MemoryBlock(
+      b,
+      0x6000000,
+      0x6017fff,
+    );
+
+/// The [MemoryBlock] representing object access memory.
+///
+/// This block is 1kb.
+MemoryBlock objectBlock(ByteBuffer b) => new MemoryBlock(
+      b,
+      0x7000000,
+      0x70003ff,
+    );
+
+/* External memory (Game Pak) Omitted for now */
+
+/// A specific, contiguous block of memory.
 class MemoryBlock {
+  /// The low address of this block.
   final int start;
+
+  /// The high address of this block.
   final int end;
   final Uint8List _bytes;
 
   MemoryBlock(ByteBuffer buffer, this.start, this.end)
       : _bytes = buffer.asUint8List(start, end - start);
 
+  /// The bytes between this block's [start] and [end] addresses.
   Uint8List get bytes => _bytes;
 
+  /// The number of bytes in this block.
   int get lengthInBytes => _bytes.lengthInBytes;
-}
-
-abstract class MemoryLayout {
-  //
-  // General internal memory blocks
-  //
-
-  // 16kb.
-  static MemoryBlock bios(ByteBuffer b) => new MemoryBlock(
-        b,
-        0x0,
-        0x3fff,
-      );
-
-  // 256kb. (a.k.a. on-board work ram)
-  static MemoryBlock internalWork(ByteBuffer b) => new MemoryBlock(
-        b,
-        0x2000000,
-        0x203ffff,
-      );
-
-  // 32kb. (a.k.a. on-chip work ram)
-  static MemoryBlock externalWork(ByteBuffer b) => new MemoryBlock(
-        b,
-        0x3000000,
-        0x3007fff,
-      );
-
-  // 1kb.
-  static MemoryBlock io(ByteBuffer b) => new MemoryBlock(
-        b,
-        0x4000000,
-        0x40003fe,
-      );
-
-  //
-  // Internal display memory blocks
-  //
-
-  // 1kb.
-  static MemoryBlock palette(ByteBuffer b) => new MemoryBlock(
-        b,
-        0x5000000,
-        0x50003ff,
-      );
-
-  // 96kb.
-  static MemoryBlock video(ByteBuffer b) => new MemoryBlock(
-        b,
-        0x6000000,
-        0x6017fff,
-      );
-
-  // 1kb. (a.k.a oam)
-  static MemoryBlock object(ByteBuffer b) => new MemoryBlock(
-        b,
-        0x7000000,
-        0x70003ff,
-      );
-
-  //
-  // External memory (Game Pak) Omitted for now
-  //
 }
