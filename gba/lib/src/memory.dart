@@ -12,6 +12,10 @@ typedef Future<List<int>> BiosLoader();
 /// Access into all of the RAM for the emulator.
 class MemoryManager {
   /// Total size of GBA memory map, including unused areas (except the last).
+  // Allocating the remaining (2^32 - 1) - (2^28 - 1) addresses for
+  // consistency's sakes takes a large amount of time.  Hopefully no ROMs use
+  // these 'unused' areas for any special purpose.  The documentation states
+  // nothing about this except that the blocks are unused.
   static const numAddresses = 0x0fffffff;
 
   static Future<List<int>> _loadBiosDefault() {
