@@ -11,8 +11,8 @@ typedef Future<List<int>> BiosLoader();
 
 /// Access into all of the RAM for the emulator.
 class MemoryManager {
-  /// Total size of GBA memory map, including unused areas.
-  static const numAddresses = 0xffffffff;
+  /// Total size of GBA memory map, including unused areas (except the last).
+  static const numAddresses = 0x0fffffff;
 
   static Future<List<int>> _loadBiosDefault() {
     return const Resource('package:gba/bios.bin').readAsBytes();
