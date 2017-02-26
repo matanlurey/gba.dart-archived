@@ -4,30 +4,35 @@ import 'package:binary/binary.dart';
 
 /// "Decodes" a compiled ARM7/TDMI program so it can be executed in an emulator.
 class Arm7TdmiDecoder {
-  const Arm7TdmiDecoder();
+  // Bits 27-20 (high) and 7-4 (base) added end-to-end.
+  static int _compute12Bits(int instruction) =>
+      (((instruction >> 16) & 0xFF0) | ((instruction >> 4) & 0x0F));
 
-  const factory Arm7TdmiDecoder.fromMap(
-    Map<int, Arm7TdmiInstruction> instructions,
-  ) = _MapArm7TdmiDecoder;
+  const Arm7TdmiDecoder();
 
   /// Decodes and compiles [instruction] into a decoded `ARM` instruction.
   Arm7TdmiInstruction decodeArm(int instruction) {
-    final format = new Arm7TdmiInstructionFormat.decoded(instruction);
+    final format = decodeArmFormat(instruction);
     assert(format != null);
     return format.decode(instruction);
   }
-}
 
-class _MapArm7TdmiDecoder implements Arm7TdmiDecoder {
-  final Map<int, Arm7TdmiInstruction> _instructions;
-
-  const _MapArm7TdmiDecoder(this._instructions);
-
-  @override
-  Arm7TdmiInstruction decodeArm(int instruction) {
-    final decoded = _instructions[instruction];
-    assert(decoded != null);
-    return decoded;
+  Arm7TdmiInstructionFormat decodeArmFormat(int instruction) {
+    final computed = _compute12Bits(instruction);
+    for (final format in Arm7TdmiInstructionFormat.formats) {
+      if (format.isFormat(computed)) {
+        return format;
+      }
+    }
+    // TODO: Remove once isFormat works for this format type.
+    if (instruction & 0x00000090 == 0x00000090) {
+      return const HalfWordDataTransferRegisterOffset();
+    }
+    throw new ArgumentError.value(
+      instruction,
+      'instruction',
+      'No matching format: $computed.',
+    );
   }
 }
 
@@ -50,40 +55,21 @@ abstract class Arm7TdmiInstructionFormat {
     const BlockDataTransfer(),
     const Undefined(),
     const SingleDataTransfer(),
-    const DataProcessingOrPsrTransfer(),
     const HalfWordDataTransferImmediateOffset(),
     const HalfWordDataTransferRegisterOffset(),
     const BrandAndExchange(),
     const SingleDataSwap(),
     const MultiplyLong(),
     const Multiply(),
+    const DataProcessingOrPsrTransfer(),
   ];
-
-  static int _computeFormat(int instruction) =>
-      (uint32.range(instruction, 27, 20) << 4) |
-      (uint32.range(instruction, 7, 4));
 
   final int _formatMask;
 
-  /// Returns the format of [instruction].
-  factory Arm7TdmiInstructionFormat.decoded(int instruction) {
-    final computed = _computeFormat(instruction);
-    for (final format in formats) {
-      if (format.isFormat(computed)) {
-        return format;
-      }
-    }
-    throw new ArgumentError.value(
-      instruction,
-      'instruction',
-      'No matching format: $computed.',
-    );
-  }
-
   const Arm7TdmiInstructionFormat._(this._formatMask);
 
-  /// Whether [instruction] is of this format.
-  bool isFormat(int instruction) => instruction & _formatMask == _formatMask;
+  /// Whether [computed] is of this format.
+  bool isFormat(int computed) => computed & _formatMask == _formatMask;
 
   /// Decodes the condition from [instruction].
   Arm7TdmiCondition cond(int instruction) {
@@ -117,7 +103,7 @@ void _assertValidOpcode(
 /// 3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 9 8 7 6 5 4 3 2 1 0
 /// 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
 /// ---------------------------------------------------------------
-/// Cond*** 0 0 1 Opcode* S Rn***** Rd***** Operand2***************
+/// Cond*** 0 0 0 Opcode* S Rn***** Rd***** Operand2***************
 /// ```
 class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
   static const _opAND = 0x0;
@@ -137,7 +123,7 @@ class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
   static const _opBIC = 0xE;
   static const _opMVN = 0xF;
 
-  const DataProcessingOrPsrTransfer() : super._(0x200);
+  const DataProcessingOrPsrTransfer() : super._(0x0);
 
   @override
   Arm7TdmiInstruction decode(int instruction) {
@@ -189,7 +175,7 @@ class DataProcessingOrPsrTransfer extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 0 0 0 A S Rd***** Rn***** Rs***** 1 0 0 1 Rm*****
 /// ```
 class Multiply extends Arm7TdmiInstructionFormat {
-  const Multiply() : super._(0x009);
+  const Multiply() : super._(0x9);
 
   @override
   Arm7TdmiInstruction decode(int instruction) {
@@ -224,7 +210,7 @@ class Multiply extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 0 1 U A S RdHi*** RdLo*** Rs***** 1 0 0 1 Rm*****
 /// ```
 class MultiplyLong extends Arm7TdmiInstructionFormat {
-  const MultiplyLong() : super._(0x089);
+  const MultiplyLong() : super._(0x89);
 
   @override
   Arm7TdmiInstruction decode(int instruction) {
@@ -311,12 +297,16 @@ class BrandAndExchange extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 P U 0 W L Rn***** Rd***** 0 0 0 0 1 S H 1 Rm*****
 /// ```
 class HalfWordDataTransferRegisterOffset extends Arm7TdmiInstructionFormat {
-  const HalfWordDataTransferRegisterOffset() : super._(0x00B);
+  const HalfWordDataTransferRegisterOffset() : super._(0x9);
 
   @override
   Arm7TdmiInstruction decode(int instruction) {
     throw new UnimplementedError();
   }
+
+  // TODO: Figure out what the proper mask/logic is.
+  @override
+  bool isFormat(int computed) => false;
 
   /// Returns ???.
   int p(int instruction) => uint32.get(instruction, 24);
@@ -355,7 +345,7 @@ class HalfWordDataTransferRegisterOffset extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 0 0 P U 1 W L Rn***** Rd***** Offset* 1 S H 1 Offset*
 /// ```
 class HalfWordDataTransferImmediateOffset extends Arm7TdmiInstructionFormat {
-  const HalfWordDataTransferImmediateOffset() : super._(0x04B);
+  const HalfWordDataTransferImmediateOffset() : super._(0x49);
 
   @override
   Arm7TdmiInstruction decode(int instruction) {
@@ -399,7 +389,7 @@ class HalfWordDataTransferImmediateOffset extends Arm7TdmiInstructionFormat {
 /// Cond*** 0 1 I P U B W L Rn***** Rd***** Offset*****************
 /// ```
 class SingleDataTransfer extends Arm7TdmiInstructionFormat {
-  const SingleDataTransfer() : super._(0x600);
+  const SingleDataTransfer() : super._(0x400);
 
   @override
   Arm7TdmiInstruction decode(int instruction) {
@@ -604,7 +594,7 @@ class CoprocessorDataOperation extends Arm7TdmiInstructionFormat {
 /// Cond*** 1 1 1 0 CPOpc L CRn**** Rd***** CP#**** CP*** 1 CRm****
 /// ```
 class CoprocessorRegisterTransfer extends Arm7TdmiInstructionFormat {
-  const CoprocessorRegisterTransfer() : super._(0xE00);
+  const CoprocessorRegisterTransfer() : super._(0xE01);
 
   @override
   Arm7TdmiInstruction decode(int instruction) {
@@ -642,7 +632,7 @@ class CoprocessorRegisterTransfer extends Arm7TdmiInstructionFormat {
 /// Cond*** 1 1 1 1 (Ignored by processor*************************)
 /// ```
 class SoftwareInterrupt extends Arm7TdmiInstructionFormat {
-  const SoftwareInterrupt() : super._(0xE01);
+  const SoftwareInterrupt() : super._(0xF00);
 
   @override
   Arm7TdmiInstruction decode(_) => SWI;

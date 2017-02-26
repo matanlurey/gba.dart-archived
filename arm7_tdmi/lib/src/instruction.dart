@@ -38,6 +38,9 @@ abstract class Arm7TdmiInstruction<F extends Arm7TdmiInstructionFormat> {
     @required this.suffix,
   });
 
+  /// Returns a string describing [instruction] as ARM assembly.
+  String disassemble(int instruction);
+
   /// Executes this instruction.
   ///
   /// Subclasses have additional named parameters that are required.
