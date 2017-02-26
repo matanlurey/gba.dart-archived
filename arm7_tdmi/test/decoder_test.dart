@@ -80,22 +80,20 @@ void main() {
         final decoded = const Arm7TdmiDecoder().decodeArmFormat(instr);
         final u16of12bits = (((instr >> 16) & 0xFF0) | ((instr >> 4) & 0x0F));
         final mask = u16of12bits.toRadixString(16);
-        expect(
-          decoded.runtimeType,
-          format,
-          reason: ''
-              'Was decoded as a ${decoded.runtimeType}, but expected $format\n'
-              'Based on input bits, the mask should be 0x$mask\n'
-              '(Normalized bits: $bits)'
-        );
+        expect(decoded.runtimeType, format,
+            reason: ''
+                'Was decoded as a ${decoded.runtimeType}, but expected $format\n'
+                'Based on input bits, the mask should be 0x$mask\n'
+                '(Normalized bits: $bits)');
       } on ArgumentError catch (_) {
         final instr = uint32.parseBits(bits);
         final u16of12bits = (((instr >> 16) & 0xFF0) | ((instr >> 4) & 0x0F));
         final mask = u16of12bits.toRadixString(16);
-        fail(''
-          'Failed to decode ${bits} as $format\n'
-          'Based on the input bits, the mask should be 0x$mask'
-          '(Normalized bits: $bits)',
+        fail(
+          ''
+              'Failed to decode ${bits} as $format\n'
+              'Based on the input bits, the mask should be 0x$mask'
+              '(Normalized bits: $bits)',
         );
       }
     }, skip: _FAILING.contains(format) ? 'Skipped $format' : null);
