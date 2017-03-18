@@ -20,9 +20,9 @@ import 'package:meta/meta.dart';
 /// ```
 int signExtend(int bits, int startSize, int endSize) {
   assert(endSize > startSize);
-  int extendBit = getBit(bits, startSize-1);
+  int extendBit = getBit(bits, startSize - 1);
   if (extendBit == 1) {
-    int newHighBits = pow(2, endSize-startSize) - 1;
+    int newHighBits = pow(2, endSize - startSize) - 1;
     bits = (newHighBits << startSize) | bits;
   }
   return bits;
