@@ -156,7 +156,7 @@ void _runIntegralTests(
     test('should extend a number with sign-bit 1', () {
       int startBits = 6; // 0b110
       int endBits = 30; // 0b11110
-      expect(signExtend(startBits, 3, 2), endBits);
+      expect(signExtend(startBits, 3, 5), endBits);
     });
     test('should extend a number with sign-bit 0', () {
       int startBits = 3; // 0b011
