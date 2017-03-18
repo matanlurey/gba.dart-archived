@@ -4,7 +4,7 @@ import 'dart:math' show pow;
 import 'package:binary/binary.dart' as binary;
 import 'package:meta/meta.dart';
 
-/// Returns [bits] sign-extended with [n] bits.
+/// Returns [bits] sign-extended with [endSize] - [startSize] bits.
 ///
 /// Sign extension is the operation of increasing the number of bits of a binary
 /// number while preserving the number's sign. This is done by appending digits
@@ -19,6 +19,7 @@ import 'package:meta/meta.dart';
 /// signExtend(bits, 10, 32);
 /// ```
 int signExtend(int bits, int startSize, int endSize) {
+  assert(endSize > startSize);
   int extendBit = getBit(bits, startSize-1);
   if (extendBit == 1) {
     int newHighBits = pow(2, endSize) - 1;
