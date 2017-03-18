@@ -4,6 +4,29 @@ import 'dart:math' show pow;
 import 'package:binary/binary.dart' as binary;
 import 'package:meta/meta.dart';
 
+/// Returns [bits] sign-extended with [n] bits.
+///
+/// Sign extension is the operation of increasing the number of bits of a binary
+/// number while preserving the number's sign. This is done by appending digits
+/// to the most significant side of the number.  For example: if 6 bits are
+/// used to represent the value `00 1010` (decimal +10) and the sign extend
+/// operation increases the word length to 16 bits, the new representation is
+/// `0b0000 0000 0000 1010`.   Similarly the 10 bit value `11 1111 0001` can
+/// be sign extended to 16 bits as `1111 1111 1111 0001`
+///
+/// [bits] will be extended from [startSize] to [endSize] bits.
+/// ```dart
+/// signExtend(bits, 10, 32);
+/// ```
+int signExtend(int bits, int startSize, int endSize) {
+  int extendBit = getBit(bits, startSize-1);
+  if (extendBit == 1) {
+    int newHighBits = pow(2, endSize) - 1;
+    bits = (newHighBits << startSize) | bits;
+  }
+  return bits;
+}
+
 /// Returns the [n]th from [bits].
 ///
 /// There is no range checking in this top-level function. To verify you are
