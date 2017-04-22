@@ -9,6 +9,12 @@ class SWI$ extends Arm7TdmiInstruction<SoftwareInterrupt> {
         );
 
   @override
+  String disassemble(int instruction) {
+    final cond = new Arm7TdmiCondition.decode(instruction);
+    return 'SWI{$cond}';
+  }
+
+  @override
   void execute({@required Arm7Tdmi cpu}) {
     cpu.service.call(cpu);
   }

@@ -5,16 +5,12 @@ import 'package:test/test.dart';
 // We need to get these cases to pass, but skipping for now.
 const _FAILING = const [
   HalfWordDataTransferRegisterOffset,
-  HalfWordDataTransferImmediateOffset,
-  SingleDataTransfer,
-  CoprocessorDataOperation,
-  CoprocessorRegisterTransfer,
 ];
 
 void main() {
   const [
     const [
-      'Cond*** 0 0 1 Opcode* S Rn***** Rd***** Operand2***************',
+      'Cond*** 0 0 0 Opcode* S Rn***** Rd***** Operand2***************',
       DataProcessingOrPsrTransfer
     ],
     const [
@@ -69,20 +65,37 @@ void main() {
       'Cond*** 1 1 1 0 CPOpc L CRn**** Rd***** CP#**** CP*** 1 CRm****',
       CoprocessorRegisterTransfer,
     ],
+    const [
+      'Cond*** 1 1 1 1 (Ignored by processor*************************)',
+      SoftwareInterrupt,
+    ],
   ].forEach((formats) {
     final format = formats.last as Type;
     var bits = formats.first as String;
     bits = _normalizeBits(bits);
 
     test('$format should decode $bits', () {
-      final decoded = new Arm7TdmiInstructionFormat.decoded(
-        uint32.parseBits(bits),
-      );
-      expect(
-        decoded.runtimeType,
-        format,
-        reason: 'Should not have been recognized as a $decoded, but $format',
-      );
+      try {
+        final instr = uint32.parseBits(bits);
+        final decoded = const Arm7TdmiDecoder().decodeArmFormat(instr);
+        final u16of12bits = (((instr >> 16) & 0xFF0) | ((instr >> 4) & 0x0F));
+        final mask = u16of12bits.toRadixString(16);
+        expect(decoded.runtimeType, format,
+            reason: ''
+                'Was decoded as a ${decoded.runtimeType}, but expected $format\n'
+                'Based on input bits, the mask should be 0x$mask\n'
+                '(Normalized bits: $bits)');
+      } on ArgumentError catch (_) {
+        final instr = uint32.parseBits(bits);
+        final u16of12bits = (((instr >> 16) & 0xFF0) | ((instr >> 4) & 0x0F));
+        final mask = u16of12bits.toRadixString(16);
+        fail(
+          ''
+              'Failed to decode ${bits} as $format\n'
+              'Based on the input bits, the mask should be 0x$mask'
+              '(Normalized bits: $bits)',
+        );
+      }
     }, skip: _FAILING.contains(format) ? 'Skipped $format' : null);
   });
 }

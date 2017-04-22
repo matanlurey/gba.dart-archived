@@ -23,6 +23,7 @@ abstract class Arm7TdmiCondition {
   static const NV = const _Never();
 
   static final _byCode = new Map.fromIterable(values, key: (v) => v.code);
+
   static const values = const [
     EQ,
     NE,

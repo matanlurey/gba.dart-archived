@@ -1,7 +1,5 @@
 part of arm7_tdmi.src.instruction;
 
-// TODO(kharland): Figure out the correct format for this instruction and fix
-// hello world test.
 class LDR$ extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
   const LDR$._()
       : super._(
@@ -9,6 +7,12 @@ class LDR$ extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
           opcode: null,
           suffix: 'LDR',
         );
+
+  @override
+  String disassemble(int instruction) {
+    final cond = new Arm7TdmiCondition.decode(instruction);
+    return 'LDR{$cond} ???????????????';
+  }
 
   @override
   void execute() {}

@@ -9,6 +9,14 @@ class MOVS$ extends Arm7TdmiInstruction<DataProcessingOrPsrTransfer> {
         );
 
   @override
+  String disassemble(int instruction) {
+    final cond = new Arm7TdmiCondition.decode(instruction);
+    final rd = format.rd(instruction);
+    final op2 = format.operand(instruction);
+    return 'MOV{$cond}{S} Rd=$rd, Op2=$op2';
+  }
+
+  @override
   void execute({
     @required Arm7TdmiRegisters gprs,
     @required int rd,
