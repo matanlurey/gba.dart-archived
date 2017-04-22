@@ -1,3 +1,6 @@
 .pub/
 .packages
 pubspec.lock
+.idea/
+toy.dart
+
