@@ -299,6 +299,7 @@ class Integral implements Comparable<Integral> {
     return result;
   }
 
+
   /// Parses a binary number made entirely of 1's and 0's.
   ///
   /// In _checked mode_, throws if the result is out of range.
